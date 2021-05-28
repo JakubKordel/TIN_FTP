@@ -15,7 +15,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <string>
 
+const int RECV_BUF_SIZE = 200;
 
 int Socket(int family, int type, int protocol);
 int Bind(int sock, struct sockaddr * saddr, socklen_t addrlen);
@@ -29,6 +31,8 @@ int Pthread_detach(pthread_t tid);
 int Pthread_join(pthread_t tid, void **status);
 // int Read();
 ssize_t Recv(int sockfd, void *buff, size_t nbytes, int flags);
-
+ssize_t Send(int sockfd, const void *buf, size_t nbytes, int flags);
+int SendMsg(int msgsocket, std::string msg);
+int ReceiveMsg(int msgsocket, std::string &msg, int rcvbuf_size = RECV_BUF_SIZE, int flags = 0);
 
 #endif

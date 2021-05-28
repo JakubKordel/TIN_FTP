@@ -13,7 +13,7 @@ class FTPServer{
     std::string port;
 
     int listenfd;
-    socklen_t servaddr, cliaddr;
+    socklen_t servaddr;
 
 public:
     FTPServer();
