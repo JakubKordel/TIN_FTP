@@ -6,6 +6,7 @@
 
 // wrapped network functions 
 
+
 int Socket(int family, int type, int protocol){
     int sockfd = socket(family, type, protocol);
     if( sockfd == -1 ){
@@ -76,6 +77,37 @@ int Getsockname(int sock, struct sockaddr *addr, socklen_t *length){
         exit(1);
     }
     return 0;
+}
+
+// Pthread_create() have to know function which is passed to it as argument 
+
+int Pthread_detach(pthread_t tid){
+    int res = pthread_detach(tid);
+    if(res>0){
+        errno = res;
+        perror("creating thread");
+        exit(1); 
+    }
+    return res;
+}
+
+int Pthread_join(pthread_t tid, void **status){
+    int res = pthread_join(tid, status);
+    if(res>0){
+        errno = res;
+        perror("creating thread");
+        exit(1); 
+    }
+    return res;
+}
+
+
+ssize_t Recv(int sockfd, void *buff, size_t nbytes, int flags){
+    int result = recv(sockfd, buff, nbytes, flags);
+    if(result<0){
+        // blad czytania
+    }
+    return result;
 }
 
 #endif

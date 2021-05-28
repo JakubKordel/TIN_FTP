@@ -2,7 +2,7 @@
 
 #include <string>
 #include <iostream>
-#include "unp.h"
+#include "../NetFunctions/unp.h"
 
 
 static const int MAX_CLIENTS = 6;
@@ -26,6 +26,18 @@ public:
 private:
 
     int BindSock(int sock);
+    void SaveServAddress(struct sockaddr_in &server, int sock);
+    void PassClientToServe(int msgsock, struct sockaddr_in & cliaddr);
+
+};
+
+void *CreateServerPI(void *arg);
 
 
+int CreateServerPIThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg);
+
+struct ServerPIArgs{
+    int msgsock;
+    int cliport;
+    std::string cliaddr;
 };

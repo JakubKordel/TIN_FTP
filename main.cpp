@@ -12,7 +12,6 @@ int main(int argc, char **argv){
 
     if( argc == 1 ){
         // run -> any address, any port
-        // server.Init();
         server = FTPServer();
     }else if( argc == 2 ){
         // run -> any ip adress, port=argv[1]
@@ -21,12 +20,6 @@ int main(int argc, char **argv){
         // run -> ip=argv[1] port=argv[2]
         server = FTPServer(argv[1], argv[2]);
     }
-
-    // string napis = "hani3a";
-
-    // cout << napis.compare("hania") << endl;
-
-    // string strnr = "123";
 
     server.Start();
     server.WriteOut();

@@ -1,6 +1,8 @@
 #include "FTPServer.h"
+#include "ServerPI.h"
 
-#include "NetFunctions.h" // wrapped network function
+#include "../NetFunctions/NetFunctions.h" // wrapped network function (definisions)
+
 
 FTPServer::FTPServer(){
     // 
@@ -29,12 +31,9 @@ FTPServer::FTPServer(char *nip_addr, char *nport){
 
 int FTPServer::Start(){
 
-    struct sockaddr_in client, server;
+    struct sockaddr_in server, client;
     int msgsock;
-    
-    //
-    socklen_t clientlen = sizeof(client);
-    char buf[INET_ADDRSTRLEN];
+    unsigned int cliaddrlen = sizeof(client);
 
     listenfd = Socket(AF_INET, SOCK_STREAM, 0);
     BindSock(listenfd);
@@ -42,20 +41,15 @@ int FTPServer::Start(){
 
     // display ip address and port
     WriteOut();
+
     
+    while(1){
+        std::cout << "Listening ... \n";
+        msgsock = Accept(listenfd, (struct sockaddr*) &client, &cliaddrlen);
+        std::cout << "Client accepted\n";
+        PassClientToServe(msgsock, client);
 
-    msgsock = Accept(listenfd, (struct sockaddr*) &client, &clientlen);
-
-    Inet_ntop(AF_INET, &client.sin_addr, buf, sizeof(buf));
-
-    std::cout << "Client ip: " << buf << std::endl;
-
-    char msg[1024];
-    read(msgsock, msg, 200);
-    // std::cout << msg;
-
-    Close(msgsock);
-
+    }
     Close(listenfd);
 
     return 0;
@@ -69,7 +63,6 @@ void FTPServer::WriteOut(){
 int FTPServer::BindSock(int sock){
     struct sockaddr_in server;
     char *saddr = &ip_addr[0];
-    char servipstr[INET_ADDRSTRLEN];
 
     server.sin_family = AF_INET;
     if( ip_addr.compare("0") == 0 ){
@@ -87,11 +80,59 @@ int FTPServer::BindSock(int sock){
     Bind(sock, (struct sockaddr *) &server, sizeof (server));
 
     // assign to ip_addr and port current server's values
+    SaveServAddress(server, sock);
+
+    return 0;
+}
+
+void FTPServer::SaveServAddress(struct sockaddr_in &server, int sock){
+    char servipstr[INET_ADDRSTRLEN];
     unsigned int length = sizeof(server);
     Getsockname( sock, (struct sockaddr *) &server, &length );
     Inet_ntop(AF_INET, &server.sin_addr, servipstr, sizeof(servipstr));
     ip_addr = std::string(servipstr);
     port = std::to_string(ntohs(server.sin_port));
+}
 
-    return 0;
+void FTPServer::PassClientToServe(int msgsock, struct sockaddr_in &cliaddr){
+    ServerPIArgs *args = new ServerPIArgs;
+    // ServerPIArgs args;
+    pthread_t tid;
+    char cliaddrstr[INET_ADDRSTRLEN];
+    Inet_ntop(AF_INET, &cliaddr.sin_addr, cliaddrstr, sizeof (cliaddr));
+
+    // prepare arguments for ServerPI
+    args->msgsock = msgsock;
+    args->cliaddr = std::string(cliaddrstr);
+    args->cliport = cliaddr.sin_port;
+
+    int res = CreateServerPIThread(&tid, NULL, CreateServerPI, (void *)args);
+ 
+
+    // Pthread_create(NULL, NULL, CreateServerPI, (void *)&args);
+    // Pthread_join(tid, NULL);
+}
+
+void *CreateServerPI(void *arg){
+// this function could be inside FTPServer class, but then FTPServer would be static 
+    Pthread_detach(pthread_self()); // detach from the main thread
+
+    ServerPIArgs *serv_args = static_cast<ServerPIArgs*> (arg);
+
+    ServerPI server_PI = ServerPI(serv_args->msgsock, serv_args->cliport, serv_args->cliaddr);
+    delete serv_args; // free unneeded memory
+    server_PI.Run();
+
+    return NULL;
+}
+
+int CreateServerPIThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg){
+    int res = pthread_create(tid, attr, func, (void *)arg);
+ 
+    if(res>0){
+        errno = res;
+        perror("creating thread");
+        exit(1); 
+    }
+    return res;
 }
