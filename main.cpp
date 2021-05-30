@@ -5,6 +5,7 @@
 
 using namespace std;
 
+
 int main(int argc, char **argv){
 
     FTPServer server;// = FTPServer();
@@ -21,8 +22,9 @@ int main(int argc, char **argv){
         server = FTPServer(argv[1], argv[2]);
     }
 
-    server.Start();
-    server.WriteOut();
+
+    // server.Start();
+    // server.WriteOut();
 
  
 

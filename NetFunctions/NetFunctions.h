@@ -79,6 +79,100 @@ int Getsockname(int sock, struct sockaddr *addr, socklen_t *length){
     return 0;
 }
 
+
+
+
+
+ssize_t Recv(int sockfd, void *buff, size_t nbytes, int flags){
+    int result = recv(sockfd, buff, nbytes, flags);
+    if(result<0){
+        // reading error
+        perror("receiving data");
+    }
+    return result;
+}
+
+ssize_t Read(int sockfd, void *buff, size_t nbytes){
+    int result = read(sockfd, buff, nbytes);
+    if(result<0){
+        // reading error
+        perror("reading data");
+    }
+    return result;
+}
+
+ssize_t Send(int sockfd, const void *buff, size_t nbytes, int flags){
+    int result = send(sockfd, buff,  nbytes, flags);
+    if( result < 0 ){
+        perror("sending data");
+        // exit(1);
+    }
+    return result;
+}
+
+int SendMsg(int msgsocket, std::string msg){
+
+    char *message;
+    msg.push_back('\0'); // adding character which means end of msg
+    message = &msg[0];
+    int msglength = msg.length()+1; // send byte 0 - end of message
+    int curr_pos = 0, to_send = msglength;
+    while(curr_pos<msglength){
+        int nsent = Send(msgsocket, message+curr_pos, to_send, 0);
+        if( nsent>0 ){
+            curr_pos += nsent;
+            to_send -= nsent;
+        }else if( nsent == 0 ){
+            // entire message has been sent
+            // curr_pos = msg.length() + 1;
+            
+        }else{
+            // error
+            return -1;
+        }
+
+    }
+    return 0;
+}
+
+/* read() and recv() works a bit different!:
+ * read() passes as result msg[] and put after last byte character '\0'
+ * meanwhile recv() dont do this
+*/
+int ReceiveMsg(int msgsocket, std::string &msg, int rcvbuf_size, int flags ){
+
+    char msg_buf[rcvbuf_size+1]; // last byte for '\0'
+    // msg_buf[rcvbuf_size-1] = 
+    msg.clear();
+    int ndata;
+    do{
+        ndata = Recv(msgsocket, msg_buf, rcvbuf_size, flags);
+        msg_buf[ndata] = '\0';
+        if(ndata>0){
+            msg.append(msg_buf);
+        }
+    }while(msg_buf[ndata-1] != '\0');// we read entire message (until get char which means that msg ends)
+
+    return 0;
+}
+
+
+int ReadMsg(int msgsocket, std::string &msg, int rcvbuf_size){
+    char msg_buf[rcvbuf_size];
+    // msg_buf[rcvbuf_size-1] = 
+    msg.clear();
+    int ndata;
+    do{
+        ndata = Read(msgsocket, msg_buf, sizeof(msg_buf));
+        std::cout << msg_buf <<std::endl;
+        if(ndata>0){
+            msg.append(msg_buf);
+        }
+    }while(msg_buf[ndata-1] != '\0');// we read entire message (until get char which means that msg ends)
+
+    return 0;
+}
+
 // Pthread_create() have to know function which is passed to it as argument 
 
 int Pthread_detach(pthread_t tid){
@@ -99,63 +193,6 @@ int Pthread_join(pthread_t tid, void **status){
         exit(1); 
     }
     return res;
-}
-
-
-ssize_t Recv(int sockfd, void *buff, size_t nbytes, int flags){
-    int result = recv(sockfd, buff, nbytes, flags);
-    if(result<0){
-        // blad czytania
-        perror("receiving data");
-    }
-    return result;
-}
-
-ssize_t Send(int sockfd, const void *buff, size_t nbytes, int flags){
-    int result = send(sockfd, buff,  nbytes, flags);
-    if( result < 0 ){
-        perror("sending data");
-        // exit(1);
-    }
-    return result;
-}
-
-int SendMsg(int msgsocket, std::string msg){
-
-    char *message;
-    msg.push_back('\0'); // adding character which means end of msg
-    message = &msg[0];
-    int msglength = msg.length()+1;
-    int curr_pos = 0, to_send = msglength;
-    while(curr_pos<msglength){
-        int nsent = Send(msgsocket, message+curr_pos, to_send, 0);
-        if( nsent>0 ){
-            curr_pos += nsent;
-            to_send -= nsent;
-        }else if( nsent == 0 ){
-            // entire message has been sent
-            // curr_pos = msg.length() + 1;
-            
-        }else{
-            // error
-            return -1;
-        }
-
-    }
-    return 0;
-}
-
-int ReceiveMsg(int msgsocket, std::string &msg, int rcvbuf_size, int flags ){
-
-    char msg_part[rcvbuf_size];
-    msg.clear();
-    int ndata;
-    do{
-        ndata = recv(msgsocket, msg_part, sizeof(msg_part), flags);
-        msg.append(msg_part);
-    }while(msg_part[ndata-1] != '\0');// we read entire message (until get char which means that msg ends)
-
-    return 0;
 }
 
 #endif
