@@ -21,7 +21,7 @@ public:
     
     int Start();
     void PrintHelp();
-
+    int SendResponse(Response resp);
 
 private:
     void *ServeClient(void* arg);
@@ -30,6 +30,7 @@ private:
 
     void handleNoCommandFault() override;
     Command *nextCommand() override;
+    void returnResponse(Response resp) override;
 
     const std::string welcome_msg = "Welcome to FTP Server 1.0\nSend \"help\" to get information how to use server";
 
@@ -47,7 +48,7 @@ public:
 
     bool isCorrect();
 
-    void handleFaultyCommand();
+    Response handleFaultyCommand();
 
-    void handleCommand();
+    Response handleCommand();
 };

@@ -23,8 +23,8 @@ int main(int argc, char **argv){
     }
 
 
-    // server.Start();
-    // server.WriteOut();
+    server.Start();
+    server.WriteOut();
 
  
 

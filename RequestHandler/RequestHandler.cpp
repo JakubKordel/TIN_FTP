@@ -2,17 +2,21 @@
 
 
 void RequestHandler::Run(){
+    Response response;
     while (!exit) {
         Command * command = nextCommand();
         if (command == nullptr){
             handleNoCommandFault();
         } else {
-            if (command ->isCorrect()){
-            command ->handleCommand();
+            if (command->isCorrect()){
+                response = command->handleCommand();
             } else {
-            command ->handleFaultyCommand();
+                response = command->handleFaultyCommand();
             }
             delete(command);
+            // returnResponse(response);
+            
+            exit = 1;
         }
     }
 }

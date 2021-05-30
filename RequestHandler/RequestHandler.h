@@ -7,12 +7,15 @@
 
 class Command {
 public:
-    virtual void handleCommand() = 0;
+    virtual struct Response handleCommand() = 0;
     virtual bool isCorrect() = 0;
-    virtual void handleFaultyCommand() = 0;
+    virtual struct Response handleFaultyCommand() = 0;
 };
 
 class RequestHandler{
+
+protected:
+    int curr_operation = 0;
 
 private:
     bool exit = false;
@@ -21,13 +24,13 @@ private:
     std::string username;
     std::string curr_dir;
 
-    int curr_operation = 0;
     int err = 0;
     std::vector<std::string> arguments;
 
 public:
     void Run();
     virtual Command * nextCommand() = 0;
+    virtual void returnResponse(Response resp) = 0;
 protected:
     virtual void handleNoCommandFault() = 0;
 
@@ -39,20 +42,9 @@ private:
     friend class ExitCommand;
 };
 
-enum Operation{
-    help = 0,
-    put = 1,
-    get = 2,
-    login = 3,
-    logout = 4,
-    mkd = 5,
-    cd = 6,
-    ls = 7
-};
-
 struct Response{
-    int err_code;               // 0 if correct; error code otherwise
-    int operation;        // code (enum) of operation client asks for
+    int err_code;       // 0 if correct; error code otherwise
+    int operation;              // code (enum) of operation client asks for
     std::string msg_response;   // response to send to client
 };
 
@@ -74,9 +66,15 @@ public:
         return true;
     }
 
-    void handleFaultyCommand(){}
+    Response handleFaultyCommand(){
+        Response response;
 
-    void handleCommand(){
+        return response;
+    }
+
+    Response handleCommand(){
+        Response response;
         stopCommandHandler();
+        return response;
     }
 };

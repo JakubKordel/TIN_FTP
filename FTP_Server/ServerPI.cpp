@@ -16,16 +16,14 @@ int ServerPI::Start(){
     std::cout << "Serving client " << client_addr << ":" << client_port << std::endl;
     
     
-    while(1){
         // we serve client until he send end of connection
         // check client command
-        Run();
+    Run();
 
-    }
-
+    
     // 
 
-// obsluz 
+    // obsluz 
     // wyslij odpowiedz
     // 
 
@@ -46,8 +44,16 @@ void ServerPI::Greeting(){
     std::cout << "Greeting end\n";
 }
 
-void ServerPI::handleNoCommandFault() {
-    std::cout << "Handle no command fault\n";
+int ServerPI::SendResponse(Response resp){
+    std::string msg;
+    if( resp.err_code != 0 ){
+        msg = std::to_string(curr_operation);
+    }
+    msg.append(std::to_string(resp.err_code));
+    msg.append(resp.msg_response);
+    SendMsg(msgsocket, msg);
+
+    return 0;
 }
 
 Command* ServerPI::nextCommand() {
@@ -56,18 +62,29 @@ Command* ServerPI::nextCommand() {
 
     Command *command = nullptr;
 
-    if (comm_name == "exit") command = new ExitCommand(this) ; else
-    if (comm_name == "help") command = new HelpCommand(this) ; else
-    if (comm_name == "login") command = new LoginCommand(req) ; else
-    if (comm_name == "logout") command = new LogoutCommand(req) ; else
-    if (comm_name == "upload") command = new UploadCommand(req) ; else
-    if (comm_name == "download") command = new DownloadCommand(req) ; else
-    if (comm_name == "mkdir") command = new MkdirCommand(req) ; else
-    if (comm_name == "cd") command = new CdCommand(req); else
-    if (comm_name == "ls") command = new ListCommand(req);
+    if (comm_name == "help") {command = new HelpCommand(this) ; curr_operation = 1;} else
+    if (comm_name == "put") {command = new UploadCommand(req) ; curr_operation = 2;} else
+    if (comm_name == "get") {command = new DownloadCommand(req) ; curr_operation = 3;} else
+    if (comm_name == "ls") {command = new ListCommand(req); curr_operation = 4;} else
+    if (comm_name == "login") {command = new LoginCommand(req) ; curr_operation = 5; } else
+    if (comm_name == "logout") {command = new LogoutCommand(req) ; curr_operation = 6;} else
+    if (comm_name == "exit") {command = new ExitCommand(this) ; curr_operation = 7; } else
+    if (comm_name == "mkd") {command = new MkdirCommand(req) ; curr_operation = 8;} else
+    if (comm_name == "cd") {command = new CdCommand(req); curr_operation = 9;}
     return command;
 }
 
+void ServerPI::handleNoCommandFault() {
+    // unknown command - send error to client
+    std::cout << "Handle no command fault\n";
+    std::string msg = "Unknown command";
+
+
+}
+
+void ServerPI::returnResponse(Response resp){
+    SendResponse(resp);
+}
 
 void ServerPI::PrintHelp(){
     std::cout << "List of available commands: " << std::endl;
@@ -85,8 +102,15 @@ bool HelpCommand::isCorrect(){
     return true;
 }
 
-void HelpCommand::handleFaultyCommand(){}
+Response HelpCommand::handleFaultyCommand(){
+    Response response;
+    // std::string err_msg = 
 
-void HelpCommand::handleCommand(){
-    spi ->PrintHelp();
+    return response;
+}
+
+Response HelpCommand::handleCommand(){
+    Response response;
+    spi->PrintHelp();
+    return response;
 }

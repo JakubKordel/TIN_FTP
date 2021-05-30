@@ -23,12 +23,14 @@ int main(int argc, char *argv[])
     int sock;
     struct sockaddr_in server;
     struct hostent *hp;
-    const char *message = "Poczatek wiadomosci, Hello world , Hey Hi Hello "
-        "To juz druga linia tej wiadomosci. Ciekawe jaki przekaz bedzie tej informacji "
-        "Zdaje sie, ze ostatnio za malo czytasz, bo brakuje ci slow do wyslania w dziwnej "
-        "testowej wiadomosci. Nie poddawaj sie tylko probuj nowa tresc wiadomosci, co by sie nic nie "
-        "powtorzylo. Na razie calkiem niezle ci idzie. Do dziala. Dalej, dalej. Dobrze jest miec natchnienie "
-        "To nie jest wcale takie proste\0";
+    // const char *message = "Poczatek wiadomosci, Hello world , Hey Hi Hello "
+        // "To juz druga linia tej wiadomosci. Ciekawe jaki przekaz bedzie tej informacji "
+        // "Zdaje sie, ze ostatnio za malo czytasz, bo brakuje ci slow do wyslania w dziwnej "
+        // "testowej wiadomosci. Nie poddawaj sie tylko probuj nowa tresc wiadomosci, co by sie nic nie "
+        // "powtorzylo. Na razie calkiem niezle ci idzie. Do dziala. Dalej, dalej. Dobrze jest miec natchnienie "
+        // "To nie jest wcale takie proste\0";
+    const char *message = "get file.txt\0";
+       
 
     /* Create socket */
     sock = socket( AF_INET, SOCK_STREAM, 0);

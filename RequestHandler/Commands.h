@@ -10,104 +10,119 @@
 class StringShapeCommand : public Command {
 private:
 
-  void splitArguments(){
-    splitToWords(command, args);
-  }
+    void splitArguments(){
+        splitToWords(command, args);
+    }
 
 protected:
 
-  std::string command;
-  std::vector<std::string> args;
+    std::string command;
+    std::vector<std::string> args;
 
-  int argumentsMinimum;
-  int argumentsMaximum;
-  std::string commandDescription;
-  std::vector<std::string> argsNames;
+    int argumentsMinimum;
+    int argumentsMaximum;
+    std::string commandDescription;
+    std::vector<std::string> argsNames;
 
 public:
 
-  StringShapeCommand(std::string str){
-    command = str;
-    splitArguments();
-  }
+    StringShapeCommand(std::string str){
+        command = str;
+        splitArguments();
+    }  
 
-  void printHelp(){
-    std::cout << "Command: " << argsNames[0] << std::endl;
-    std::vector<std::string>::iterator it = argsNames.begin();
-    std::cout << "Usage: " << *it;
-    ++it;
+    void printHelp(){
+        std::cout << "Command: " << argsNames[0] << std::endl;
+        std::vector<std::string>::iterator it = argsNames.begin();
+        std::cout << "Usage: " << *it;
+        ++it;
     for (it ; it != argsNames.end(); ++it)
         std::cout << " [ " << *it << " ] ";
-    std::cout << std::endl << commandDescription << std::endl;
-  }
+        std::cout << std::endl << commandDescription << std::endl;
+    }
 
-	bool isCorrect(){
-		return (args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum);
-	}
+    bool isCorrect(){
+        return (args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum);
+    }
 
-	void handleFaultyCommand(){
-		std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
-		printHelp();
-	}
+    Response handleFaultyCommand(){
+        Response response;
+        response.err_code = 1;
+        response.msg_response = "Too many / less arguments\n"
+                                "See help for more information";
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+        return response;
+    }
 
-  void handleCommand(){
-      if (args[1] == "--help")
-      printHelp();
+    Response handleCommand(){
+        Response response;
+        if (args[1] == "--help")
+            printHelp();
         else
-      handle();
-  }
+            return handle();
+        return response;
+    }
 
-  virtual void handle() = 0;
+
+    virtual Response handle() = 0;
 };
 
 class LoginCommand : public StringShapeCommand {
 public:
-	LoginCommand(std::string string) : StringShapeCommand(string) {
-			argumentsMinimum = 4;
-			argumentsMaximum = 4;
-			commandDescription = "Connects and logins user to the server";
-			argsNames.push_back("login");
-      argsNames.push_back("username");
-			argsNames.push_back("password");
-			argsNames.push_back("serveradress");
-	}
+    LoginCommand(std::string string) : StringShapeCommand(string) {
+        argumentsMinimum = 3;
+        argumentsMaximum = 3;
+        commandDescription = "Connects and logins user to the server";
+        argsNames.push_back("login");
+        argsNames.push_back("username");
+        argsNames.push_back("password");
+        argsNames.push_back("serveradress");
+    }
 
-	void handle(){
-		std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
-	}
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
+
+        return response;
+    }
 };
 
 class LogoutCommand : public StringShapeCommand {
 public:
-	LogoutCommand(std::string string) : StringShapeCommand(string) {
-			argumentsMinimum = 1;
-			argumentsMaximum = 1;
-			commandDescription = "Logouts and disconnects user from server";
-			argsNames.push_back("logout");
-	}
+    LogoutCommand(std::string string) : StringShapeCommand(string) {
+        argumentsMinimum = 1;
+        argumentsMaximum = 1;
+        commandDescription = "Logouts and disconnects user from server";
+        argsNames.push_back("logout");
+    }
 
-	void handle(){
-		std::cout << std::endl << "I AM HANDLING LOGOUT COMMAND" << std::endl;
-	}
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM HANDLING LOGOUT COMMAND" << std::endl;
+        return response;
+    }
 };
 
-  class UploadCommand : public StringShapeCommand {
-  public:
-  	UploadCommand(std::string string) : StringShapeCommand(string) {
-  			argumentsMinimum = 2;
-  			argumentsMaximum = 2;
-  			commandDescription = "Uploads file to the server";
-  			argsNames.push_back("upload");
+class UploadCommand : public StringShapeCommand {
+public:
+    UploadCommand(std::string string) : StringShapeCommand(string) {
+        argumentsMinimum = 2;
+        argumentsMaximum = 2;
+        commandDescription = "Uploads file to the server";
+        argsNames.push_back("upload");
         argsNames.push_back("file");
-  	}
+    }
 
-  	void handle(){
-  		std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
-  	}
-  };
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
+        return response;
+    }
+};
 
-  class DownloadCommand : public StringShapeCommand {
-  public:
+class DownloadCommand : public StringShapeCommand {
+public:
     DownloadCommand(std::string string) : StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
@@ -116,13 +131,16 @@ public:
         argsNames.push_back("file");
     }
 
-    void handle(){
-      std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
+        
+        return response;
     }
-  };
+};
 
-  class MkdirCommand : public StringShapeCommand {
-  public:
+class MkdirCommand : public StringShapeCommand {
+public:
     MkdirCommand(std::string string) : StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
@@ -131,13 +149,15 @@ public:
         argsNames.push_back("directoryname");
     }
 
-    void handle(){
-      std::cout << std::endl << "I AM CREATING NEW DIRECTORY ON THE SERVER" << std::endl;
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM CREATING NEW DIRECTORY ON THE SERVER" << std::endl;
+        return response;
     }
-  };
+};
 
-  class CdCommand : public StringShapeCommand {
-  public:
+class CdCommand : public StringShapeCommand {
+public:
     CdCommand(std::string string) : StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
@@ -146,13 +166,15 @@ public:
         argsNames.push_back("directoryname or ..");
     }
 
-    void handle(){
-      std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
+        return response;
     }
-  };
+};
 
-  class ListCommand : public StringShapeCommand {
-  public:
+class ListCommand : public StringShapeCommand {
+public:
     ListCommand(std::string string) : StringShapeCommand(string) {
         argumentsMinimum = 1;
         argumentsMaximum = 1;
@@ -160,12 +182,12 @@ public:
         argsNames.push_back("ls");
     }
 
-    void handle(){
-      std::cout << std::endl << "I AM LISTING FILES IN CURRENT DIRECTORY" << std::endl;
+    Response handle(){
+        Response response;
+        std::cout << std::endl << "I AM LISTING FILES IN CURRENT DIRECTORY" << std::endl;
+        return response;
     }
-  };
-
-
+};
 
 
 #endif
