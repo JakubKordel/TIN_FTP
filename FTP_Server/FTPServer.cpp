@@ -121,7 +121,7 @@ void *CreateServerPI(void *arg){
 
     ServerPI server_PI = ServerPI(serv_args->msgsock, serv_args->cliport, serv_args->cliaddr);
     delete serv_args; // free unneeded memory
-    server_PI.Run();
+    server_PI.Start();
 
     return NULL;
 }
