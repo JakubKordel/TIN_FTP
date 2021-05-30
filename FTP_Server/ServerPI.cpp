@@ -14,7 +14,7 @@ int ServerPI::Run(){
 
     std::cout << "Serving client " << client_addr << ":" << client_port << std::endl;
     
-    ServiceProvider serv_provider = ServiceProvider();
+    RequestHandler serv_provider = RequestHandler();
 
     while(1){
         // we serve client until he send end of connection

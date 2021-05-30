@@ -5,7 +5,7 @@
 #include <vector>
 
 
-class ServiceProvider{
+class RequestHandler{
 
     bool logged = false;
     std::string username;

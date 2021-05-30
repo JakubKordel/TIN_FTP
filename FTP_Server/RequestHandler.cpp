@@ -3,7 +3,7 @@
 
 /* return struct Response described in ServiceProvider.h 
 */
-struct Response ServiceProvider::ProvideService(std::string request){
+struct Response RequestHandler::ProvideService(std::string request){
     Response response;
     response.err_code = 0;
     int result = ParseCommand(request);
@@ -17,7 +17,7 @@ struct Response ServiceProvider::ProvideService(std::string request){
     return response;
 }
 
-int ServiceProvider::ParseOperation(std::commstring request){
+int RequestHandler::ParseOperation(std::string request){
     int len = request.find_first_of(' ', 0)+1;
     int operation;
     try{
@@ -31,7 +31,7 @@ int ServiceProvider::ParseOperation(std::commstring request){
     return operation;
 }
 
-int ServiceProvider::ParseCommand( std::string request){
+int RequestHandler::ParseCommand( std::string request){
 
     curr_operation = ParseOperation(request);
     int arg_nr = 0;
@@ -50,7 +50,7 @@ int ServiceProvider::ParseCommand( std::string request){
     return 0;
 }
 
-int ServiceProvider::VerifyCommand(){
+int RequestHandler::VerifyCommand(){
     // ErrorDetector.
     // switch(curr_operation){
     //     case Operation::help:
@@ -89,7 +89,7 @@ int ServiceProvider::VerifyCommand(){
 //     return arguments.size() == nr_args;
 // }
 
-int ServiceProvider::ClearLastOperation(){
+int RequestHandler::ClearLastOperation(){
     curr_operation = 0;
     arguments.clear();
     err = 0;
