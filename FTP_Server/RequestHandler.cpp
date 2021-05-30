@@ -1,4 +1,4 @@
-#include "ServiceProvider.h"
+#include "RequestHandler.h"
 // #include "ErrorDetector.h"
 
 /* return struct Response described in ServiceProvider.h 
@@ -51,42 +51,43 @@ int ServiceProvider::ParseCommand( std::string request){
 }
 
 int ServiceProvider::VerifyCommand(){
-    switch(curr_operation){
-        case Operation::help:
+    // ErrorDetector.
+    // switch(curr_operation){
+    //     case Operation::help:
 
-            break;
-        case Operation::cd:
+    //         break;
+    //     case Operation::cd:
 
-            break;
-        case Operation::get:
+    //         break;
+    //     case Operation::get:
 
-            break;
-        case Operation::login:
+    //         break;
+    //     case Operation::login:
 
-            break;
-        case Operation::logout:
+    //         break;
+    //     case Operation::logout:
 
-            break;
-        case Operation::ls:
+    //         break;
+    //     case Operation::ls:
 
-            break;
-        case Operation::mkd:
+    //         break;
+    //     case Operation::mkd:
 
-            break;
-        case Operation::put:
+    //         break;
+    //     case Operation::put:
 
-            break;
-        default:
-            // unknown operation
-            // err = 
-            break;
-    }
+    //         break;
+    //     default:
+    //         // unknown operation
+    //         // err = 
+    //         break;
+    // }
     return 0;
 }
 
-int ServiceProvider::CheckNrOfArgs(int nr_args){
-    return arguments.size() == nr_args;
-}
+// int ServiceProvider::CheckNrOfArgs(int nr_args){
+//     return arguments.size() == nr_args;
+// }
 
 int ServiceProvider::ClearLastOperation(){
     curr_operation = 0;
