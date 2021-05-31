@@ -106,7 +106,7 @@ void FTPServer::PassClientToServe(int msgsock, struct sockaddr_in &cliaddr){
     args->cliaddr = std::string(cliaddrstr);
     args->cliport = cliaddr.sin_port;
 
-    int res = CreateServerPIThread(&tid, NULL, CreateServerPI, (void *)args);
+    int res = CreateThread(&tid, NULL, CreateServerPI, (void *)args);
  
 
     // Pthread_create(NULL, NULL, CreateServerPI, (void *)&args);
@@ -126,7 +126,7 @@ void *CreateServerPI(void *arg){
     return NULL;
 }
 
-int CreateServerPIThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg){
+int CreateThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg){
     int res = pthread_create(tid, attr, func, (void *)arg);
  
     if(res>0){

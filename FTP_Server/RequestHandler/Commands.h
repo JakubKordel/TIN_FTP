@@ -7,6 +7,8 @@
 #include "RequestHandler.h"
 #include "helpStringsOperations.h"
 
+#include "../Authentication/Authentication.h"
+
 class StringShapeCommand : public Command {
 private:
 
@@ -69,8 +71,11 @@ public:
 };
 
 class LoginCommand : public StringShapeCommand {
+private:
+    std::string root_path;
+    RequestHandler *rq;
 public:
-    LoginCommand(std::string string) : StringShapeCommand(string) {
+    LoginCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 3;
         argumentsMaximum = 3;
         commandDescription = "Connects and logins user to the server";
@@ -84,13 +89,26 @@ public:
         Response response;
         std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
 
+        Authentication auth;
+        bool issuccess = auth.login(args.at(1), args.at(2));
+        if( issuccess ){
+            response.err_code = 0;
+            response.msg_response = "OK, you have been logged in";
+        }else{
+            response.err_code = 1;
+            response.msg_response = "Login error, wrong username or password";
+        }
+
         return response;
     }
 };
 
 class LogoutCommand : public StringShapeCommand {
+private:
+    bool logged;
+    RequestHandler *rq;
 public:
-    LogoutCommand(std::string string) : StringShapeCommand(string) {
+    LogoutCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 1;
         argumentsMaximum = 1;
         commandDescription = "Logouts and disconnects user from server";
@@ -99,14 +117,28 @@ public:
 
     Response handle(){
         Response response;
+        
+        if(rq->logged == false){
+            // user is not logged in generate error
+            response.err_code = 1;
+            response.msg_response = "Logout error, you are not logged";
+        }else{
+            rq->logged = false;
+            rq->username = "";
+            response.err_code = 0;
+            response.msg_response = "OK, you have been logged out";
+        }
+
         std::cout << std::endl << "I AM HANDLING LOGOUT COMMAND" << std::endl;
         return response;
     }
 };
 
 class UploadCommand : public StringShapeCommand {
+private:
+    RequestHandler *rq;
 public:
-    UploadCommand(std::string string) : StringShapeCommand(string) {
+    UploadCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Uploads file to the server";
@@ -117,13 +149,26 @@ public:
     Response handle(){
         Response response;
         std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
+        
+        if( rq->logged == false ){
+            response.err_code = 2; //LOGGED_OUT
+            response.msg_response = "Error uploading, you have to be logged in to upload files";
+        }else{
+            // ((ServerPI*)rq)->initServerDTP();
+            std::string data = rq->dataTransmission();
+            // ServerPI create new listen socket for transmission data
+            // ServerPI sends to client new port for data connection
+            // then 
+        }
+
         return response;
     }
 };
 
 class DownloadCommand : public StringShapeCommand {
+    RequestHandler *rq;
 public:
-    DownloadCommand(std::string string) : StringShapeCommand(string) {
+    DownloadCommand(RequestHandler *request_handler, std::string string) : rq(request_handler),  StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Downloads file from the server";
@@ -140,8 +185,11 @@ public:
 };
 
 class MkdirCommand : public StringShapeCommand {
+private:
+    RequestHandler *rq;
+
 public:
-    MkdirCommand(std::string string) : StringShapeCommand(string) {
+    MkdirCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Creates new directory in current directory";
@@ -157,8 +205,10 @@ public:
 };
 
 class CdCommand : public StringShapeCommand {
+private:
+    RequestHandler *rq;
 public:
-    CdCommand(std::string string) : StringShapeCommand(string) {
+    CdCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Changes directory";
@@ -174,8 +224,10 @@ public:
 };
 
 class ListCommand : public StringShapeCommand {
+private:
+    RequestHandler *rq;
 public:
-    ListCommand(std::string string) : StringShapeCommand(string) {
+    ListCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 1;
         argumentsMaximum = 1;
         commandDescription = "Lists files and directories in current directory";

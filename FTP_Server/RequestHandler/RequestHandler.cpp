@@ -1,6 +1,5 @@
 #include "RequestHandler.h"
 
-
 void RequestHandler::Run(){
     Response response;
     while (!exit) {
@@ -14,7 +13,7 @@ void RequestHandler::Run(){
                 response = command->handleFaultyCommand();
             }
             delete(command);
-            // returnResponse(response);
+            returnResponse(response);
             
             exit = 1;
         }

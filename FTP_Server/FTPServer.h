@@ -34,7 +34,7 @@ private:
 void *CreateServerPI(void *arg);
 
 
-int CreateServerPIThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg);
+int CreateThread(pthread_t *tid, pthread_attr_t *attr, void *(*func)(void *), void *arg);
 
 struct ServerPIArgs{
     int msgsock;

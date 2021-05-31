@@ -1,6 +1,8 @@
 #include "ServerPI.h"
-#include "../RequestHandler/helpStringsOperations.h"
-#include "../RequestHandler/Commands.h"
+#include "RequestHandler/helpStringsOperations.h"
+#include "RequestHandler/Commands.h"
+#include "ServerDTP.h"
+
 
 ServerPI::ServerPI(int msgsock, int cliport, std::string cliaddr){
     msgsocket = msgsock;
@@ -15,18 +17,7 @@ int ServerPI::Start(){
 
     std::cout << "Serving client " << client_addr << ":" << client_port << std::endl;
     
-    
-        // we serve client until he send end of connection
-        // check client command
     Run();
-
-    
-    // 
-
-    // obsluz 
-    // wyslij odpowiedz
-    // 
-
 
     Close(msgsocket);
     return 0;
@@ -63,14 +54,14 @@ Command* ServerPI::nextCommand() {
     Command *command = nullptr;
 
     if (comm_name == "help") {command = new HelpCommand(this) ; curr_operation = 1;} else
-    if (comm_name == "put") {command = new UploadCommand(req) ; curr_operation = 2;} else
-    if (comm_name == "get") {command = new DownloadCommand(req) ; curr_operation = 3;} else
-    if (comm_name == "ls") {command = new ListCommand(req); curr_operation = 4;} else
-    if (comm_name == "login") {command = new LoginCommand(req) ; curr_operation = 5; } else
-    if (comm_name == "logout") {command = new LogoutCommand(req) ; curr_operation = 6;} else
+    if (comm_name == "put") {command = new UploadCommand(this, req) ; curr_operation = 2;} else
+    if (comm_name == "get") {command = new DownloadCommand(this, req) ; curr_operation = 3;} else
+    if (comm_name == "ls") {command = new ListCommand(this, req); curr_operation = 4;} else
+    if (comm_name == "login") {command = new LoginCommand(this, req) ; curr_operation = 5; } else
+    if (comm_name == "logout") {command = new LogoutCommand(this, req) ; curr_operation = 6;} else
     if (comm_name == "exit") {command = new ExitCommand(this) ; curr_operation = 7; } else
-    if (comm_name == "mkd") {command = new MkdirCommand(req) ; curr_operation = 8;} else
-    if (comm_name == "cd") {command = new CdCommand(req); curr_operation = 9;}
+    if (comm_name == "mkd") {command = new MkdirCommand(this, req) ; curr_operation = 8;} else
+    if (comm_name == "cd") {command = new CdCommand(this, req); curr_operation = 9;}
     return command;
 }
 
@@ -80,6 +71,46 @@ void ServerPI::handleNoCommandFault() {
     std::string msg = "Unknown command";
 
 
+}
+
+std::string ServerPI::dataTransmission(){
+    int datasock = 0;
+    int port;
+    std::string data;
+
+    datasock = Socket(AF_INET, SOCK_STREAM, 0);
+    port = bindServerDTP(datasock);
+
+    if(port>0){
+        SendDTPPort(port);
+        ServerDTP dtp = ServerDTP(datasock, curr_operation, client_addr);
+        data = dtp.Run();
+    }else{
+        // error
+    }
+    
+    return data;
+}
+
+int ServerPI::SendDTPPort(int port){
+    Response resp;
+    resp.err_code = 0;
+    resp.msg_response = "DTP_port 22 \nPlease connect to DTP_port"; 
+    
+    SendResponse(resp);
+    return 0;
+}
+
+int ServerPI::bindServerDTP(int sock){
+    struct sockaddr_in server;
+
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons(DTP_PORT);
+
+    Bind(sock, (struct sockaddr *) &server, sizeof(server) );
+
+    return DTP_PORT;
 }
 
 void ServerPI::returnResponse(Response resp){
