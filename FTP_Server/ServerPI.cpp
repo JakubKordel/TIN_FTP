@@ -106,7 +106,7 @@ int ServerPI::bindServerDTP(int sock){
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(DTP_PORT);
+    server.sin_port = htons(0);
 
     Bind(sock, (struct sockaddr *) &server, sizeof(server) );
 
