@@ -48,4 +48,4 @@ Filesystem:
 
 
 clean:
-	rm -f obj/*.o
+	rm -f obj/*.o libs/*.a
