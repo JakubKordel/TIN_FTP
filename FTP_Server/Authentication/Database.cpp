@@ -1,13 +1,16 @@
 #include "Database.h"
 
-bool Database::exists(std::string s1, std::string s2)
+bool Database::exists(std::string s1, std::string s2, bool strict=false)
 {
     size_t value_count = db.at(0).second.size();
     for (size_t i = 0; i < value_count; ++i)
     {
-        if (db[0].second.at(i) == s1)
-            if (db[1].second.at(i) == s2)
+        if (strict) {
+            if (db[0].second.at(i) == s1 || db[1].second.at(i) == s2)
                 return true;
+        }
+        else if (db[0].second.at(i) == s1 && db[1].second.at(i) == s2)
+            return true;
     }
     return false;
 }
