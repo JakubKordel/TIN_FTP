@@ -26,5 +26,5 @@ std::string ServerDTP::Run(){
 bool ServerDTP::VerifyClient(sockaddr_in client){
     char client_s[INET_ADDRSTRLEN];
     Inet_ntop(AF_INET, &client.sin_addr, client_s, sizeof(client));
-    return !client_addr.compare(client_s);
+    return client_addr.compare(client_s);
 }
