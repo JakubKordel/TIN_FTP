@@ -20,13 +20,13 @@ int FileSystem::SaveFile(std::string full_path, std::string file_content){
     std::fstream fd;
     try{
         fd.open(full_path, std::ios_base::out);
-    }catch(std::exception e){
+    }catch(std::exception &e){
         // std::cout << e.what;
         return -1;
     }
     try{
         fd.write(&file_content[0], file_content.length());
-    }catch(std::exception e){
+    }catch(std::exception &e){
         //
         return -1;
     }
@@ -50,7 +50,7 @@ int FileSystem::List(std::string &result, std::string curr_path){
             std::string fs_obj = entry.path();
             result.append(fs_obj.replace(fs_obj.find_first_of(curr_path), curr_path.length(), "")).push_back('\n');
         }
-    }catch(std::exception e){
+    }catch(std::exception &e){
         return -1; // list error
     }
     
@@ -139,7 +139,7 @@ int FileSystem::GetFile(std::string &result, std::string path){
     std::ifstream is;
     try{
         is.open(path, std::ifstream::in);
-    }catch(std::exception e){
+    }catch(std::exception &e){
         // std::cout << e.what;
         return -2;
     }
@@ -164,7 +164,7 @@ int FileSystem::GetFile(std::string &result, std::string path){
         std::cout << "read " <<result.length() << "bytes\n";
         free(buffer);
 
-    }catch(std::exception e){
+    }catch(std::exception &e){
         //
         return -4;
     }
@@ -174,19 +174,14 @@ int FileSystem::GetFile(std::string &result, std::string path){
 }
 
 int FileSystem::MakeDir(std::string curr_path, std::string dir_name){
-    int result = 1;
     if(curr_path.at(curr_path.length()-1) != '/'){
         curr_path.push_back('/');
     }
 
     std::string full_path = curr_path.append(dir_name);
     if(VerifyPath(full_path)){ return 1; }
-    try{
-        result = fs::create_directory(full_path);
-        return 0;
-    }catch( std::exception e ){
-        std::cout << e.what() << " FileSystem::MakeDir\n";
-        return 2;
+    if(!fs::create_directory(full_path)){
+        return 2; // directory is not created
     }
     return 0;
 }

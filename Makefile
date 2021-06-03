@@ -24,8 +24,8 @@ ReqHandler:
 
 
 
-Auth_st_lib: Auth ReadCsv Userbase PassHashing sha1
-	ar rvs libs/Auth.a obj/Authentication.o obj/readCsv.o obj/Userbase.o 
+Auth_st_lib: Auth ReadCsv Database PassHashing sha1
+	ar rvs libs/Auth.a obj/Authentication.o obj/readCsv.o obj/Database.o 
 
 Auth:
 	g++ -c $(CFLAGS) $(AUTH_PATH)/Authentication.cpp -o obj/Authentication.o
@@ -33,8 +33,8 @@ Auth:
 ReadCsv:
 	g++ -c $(CFLAGS) $(AUTH_PATH)/readCsv.cpp -o obj/readCsv.o
 
-Userbase:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/Userbase.cpp -o obj/Userbase.o
+Database:
+	g++ -c $(CFLAGS) $(AUTH_PATH)/Database.cpp -o obj/Database.o
 
 PassHashing:
 	g++ -c $(CFLAGS) $(AUTH_PATH)/HashFunctions/passwordHashing.cpp -o obj/passwordHashing.o
