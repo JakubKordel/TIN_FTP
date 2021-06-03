@@ -8,9 +8,9 @@
 
 class Command {
 public:
-    virtual struct Response handleCommand() = 0;
+    virtual void handleCommand() = 0;
     virtual bool isCorrect() = 0;
-    virtual struct Response handleFaultyCommand() = 0;
+    virtual void handleFaultyCommand() = 0;
 };
 
 class RequestHandler: public ClientState {
@@ -21,17 +21,14 @@ protected:
 private:
     bool exit = false;
     
-    // bool logged = false;
-    // std::string username;
-    // std::string curr_dir;
     int err = 0;
 
 public:
     void Run();
     virtual Command * nextCommand() = 0;
-    virtual void returnResponse(Response resp) = 0;
+    virtual void returnResponse(struct Response resp) = 0;
     
-    virtual std::string dataTransmission() = 0;
+    virtual std::string getData() = 0;
     
 protected:
     virtual void handleNoCommandFault() = 0;
@@ -68,15 +65,11 @@ public:
         return true;
     }
 
-    Response handleFaultyCommand(){
-        Response response;
+    void handleFaultyCommand(){
 
-        return response;
     }
 
-    Response handleCommand(){
-        Response response;
+    void handleCommand(){
         stopCommandHandler();
-        return response;
     }
 };

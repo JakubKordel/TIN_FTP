@@ -6,8 +6,9 @@
 #include <fstream>
 #include "RequestHandler.h"
 #include "helpStringsOperations.h"
-
+#include "../Filesystem/FileSystem.h"
 #include "../Authentication/Authentication.h"
+
 
 class StringShapeCommand : public Command {
 private:
@@ -47,32 +48,29 @@ public:
         return (args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum);
     }
 
-    Response handleFaultyCommand(){
+    void handleFaultyCommand(){
         Response response;
         response.err_code = 1;
         response.msg_response = "Too many / less arguments\n"
                                 "See help for more information";
         std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
         printHelp();
-        return response;
     }
 
-    Response handleCommand(){
-        Response response;
+    void handleCommand(){
         if (args[1] == "--help")
             printHelp();
         else
             return handle();
-        return response;
     }
 
 
-    virtual Response handle() = 0;
+    virtual void handle() = 0;
 };
 
+// command: login [username] [password]
 class LoginCommand : public StringShapeCommand {
 private:
-    std::string root_path;
     RequestHandler *rq;
 public:
     LoginCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
@@ -85,7 +83,7 @@ public:
         argsNames.push_back("serveradress");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
 
@@ -99,13 +97,15 @@ public:
             response.msg_response = "Login error, wrong username or password";
         }
 
-        return response;
+        // send response to client 
+        ((ServerPI*)rq)->SendResponse(response);
+
     }
 };
 
+// command: logout
 class LogoutCommand : public StringShapeCommand {
 private:
-    bool logged;
     RequestHandler *rq;
 public:
     LogoutCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
@@ -115,22 +115,22 @@ public:
         argsNames.push_back("logout");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         
-        if(rq->logged == false){
+        if(rq->IsLogged() == false){
             // user is not logged in generate error
             response.err_code = 1;
             response.msg_response = "Logout error, you are not logged";
         }else{
-            rq->logged = false;
-            rq->username = "";
+            rq->ResetLogged();
+            rq->SetUsername("");
             response.err_code = 0;
             response.msg_response = "OK, you have been logged out";
         }
 
+        ((ServerPI *)rq)->SendResponse(response);
         std::cout << std::endl << "I AM HANDLING LOGOUT COMMAND" << std::endl;
-        return response;
     }
 };
 
@@ -146,22 +146,23 @@ public:
         argsNames.push_back("file");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
         
-        if( rq->logged == false ){
-            response.err_code = 2; //LOGGED_OUT
+        if( rq->IsLogged() ){
+            response.err_code = 2; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
-            // ((ServerPI*)rq)->initServerDTP();
-            std::string data = rq->dataTransmission();
-            // ServerPI create new listen socket for transmission data
-            // ServerPI sends to client new port for data connection
-            // then 
-        }
+            std::string data = rq->getData();
+            // ServerPI got from the ServerDTP data to save on disc
+            std::string full_path = rq->GetCurrPath();
+            full_path.append(args.at(1));// concat current path and the filename
+            FileSystem::SaveFile(full_path, data);
+            // send response
 
-        return response;
+        }
+        
     }
 };
 
@@ -176,11 +177,10 @@ public:
         argsNames.push_back("file");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
         
-        return response;
     }
 };
 
@@ -197,10 +197,9 @@ public:
         argsNames.push_back("directoryname");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM CREATING NEW DIRECTORY ON THE SERVER" << std::endl;
-        return response;
     }
 };
 
@@ -216,10 +215,9 @@ public:
         argsNames.push_back("directoryname or ..");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
-        return response;
     }
 };
 
@@ -234,10 +232,9 @@ public:
         argsNames.push_back("ls");
     }
 
-    Response handle(){
+    void handle(){
         Response response;
         std::cout << std::endl << "I AM LISTING FILES IN CURRENT DIRECTORY" << std::endl;
-        return response;
     }
 };
 

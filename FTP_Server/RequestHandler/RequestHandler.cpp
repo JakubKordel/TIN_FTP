@@ -1,19 +1,20 @@
 #include "RequestHandler.h"
 
 void RequestHandler::Run(){
-    Response response;
     while (!exit) {
         Command * command = nextCommand();
         if (command == nullptr){
-            handleNoCommandFault();
+            // unknown command
+            handleNoCommandFault();// sprawdzic czy zaimplementowane
         } else {
             if (command->isCorrect()){
-                response = command->handleCommand();
+                // command is correct
+                command->handleCommand();
             } else {
-                response = command->handleFaultyCommand();
+                // command is wrong - i. e too many or too less arguments 
+                command->handleFaultyCommand();
             }
             delete(command);
-            returnResponse(response);
             
             exit = 1;
         }

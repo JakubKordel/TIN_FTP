@@ -53,7 +53,7 @@ Command* ServerPI::nextCommand() {
 
     Command *command = nullptr;
 
-    if (comm_name == "help") {command = new HelpCommand(this) ; curr_operation = 1;} else
+    if (comm_name == "help") {command = new HelpCommand(this) ; curr_operation = 1;} else // pomyslec, czy potrzebny
     if (comm_name == "put") {command = new UploadCommand(this, req) ; curr_operation = 2;} else
     if (comm_name == "get") {command = new DownloadCommand(this, req) ; curr_operation = 3;} else
     if (comm_name == "ls") {command = new ListCommand(this, req); curr_operation = 4;} else
@@ -73,7 +73,7 @@ void ServerPI::handleNoCommandFault() {
 
 }
 
-std::string ServerPI::dataTransmission(){
+std::string ServerPI::getData(){
     int datasock = 0;
     int port;
     std::string data;
@@ -120,12 +120,10 @@ void ServerPI::returnResponse(Response resp){
 void ServerPI::PrintHelp(){
     std::cout << "List of available commands: " << std::endl;
 
-    std::cout << "login \t\t\t logout \t\t upload \ndownload \t\t mkdir \t\t\t cd \nls \t\t\t help \t\t\t exit";
+    std::cout << "help \t\t\t put \t\t get \nls \t\t login \t\t\t logout \ncd \t\t\t mkd \t\t\t exit";
 
     std::cout << "\n\nType"<< std::endl << "[Command Name] --help " << std::endl << "for more information about command";
 }
-
-
 
 HelpCommand::HelpCommand(ServerPI * server_pi) : spi(server_pi){}
 
@@ -133,15 +131,11 @@ bool HelpCommand::isCorrect(){
     return true;
 }
 
-Response HelpCommand::handleFaultyCommand(){
-    Response response;
+void HelpCommand::handleFaultyCommand(){
     // std::string err_msg = 
 
-    return response;
 }
 
-Response HelpCommand::handleCommand(){
-    Response response;
+void HelpCommand::handleCommand(){
     spi->PrintHelp();
-    return response;
 }

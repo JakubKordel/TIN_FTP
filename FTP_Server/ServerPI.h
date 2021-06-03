@@ -23,7 +23,7 @@ public:
     int Start();
     void PrintHelp();
     int SendResponse(Response resp);
-    std::string dataTransmission() override;
+    std::string getData() override;
 
 private:
     int SendDTPPort(int port);
@@ -52,7 +52,7 @@ public:
 
     bool isCorrect();
 
-    Response handleFaultyCommand();
+    void handleFaultyCommand();
 
-    Response handleCommand();
+    void handleCommand();
 };
