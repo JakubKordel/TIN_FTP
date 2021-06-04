@@ -18,18 +18,18 @@ private:
 
 public:
     ServerPI(int msgsock, int cliport, std::string cliaddr);
-    
-    
+
+
     int Start();
     void PrintHelp();
     int SendResponse(Response resp);
+    std::string WaitForRequest();
     std::string getData() override;
 
 private:
     int SendDTPPort(int port);
     void *ServeClient(void* arg);
     void Greeting();
-    std::string WaitForRequest();
     int bindServerDTP(int sock);
 
     void handleNoCommandFault() override;

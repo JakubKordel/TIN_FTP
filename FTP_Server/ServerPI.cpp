@@ -11,12 +11,12 @@ ServerPI::ServerPI(int msgsock, int cliport, std::string cliaddr){
 }
 
 int ServerPI::Start(){
-    // 
+    //
     // char buffer[200];
     Greeting(); // welcome the client
 
     std::cout << "Serving client " << client_addr << ":" << client_port << std::endl;
-    
+
     Run();
 
     Close(msgsocket);
@@ -37,10 +37,7 @@ void ServerPI::Greeting(){
 
 int ServerPI::SendResponse(Response resp){
     std::string msg;
-    if( resp.err_code != 0 ){
-        msg = std::to_string(curr_operation);
-    }
-    msg.append(std::to_string(resp.err_code));
+    msg.append(resp.status_code);
     msg.append(resp.msg_response);
     SendMsg(msgsocket, msg);
 
@@ -88,15 +85,15 @@ std::string ServerPI::getData(){
     }else{
         // error
     }
-    
+
     return data;
 }
 
 int ServerPI::SendDTPPort(int port){
     Response resp;
-    resp.err_code = 0;
-    resp.msg_response = "DTP_port 22 \nPlease connect to DTP_port"; 
-    
+    resp.status_code = "xxx";
+    resp.msg_response = " DTP_port 22 \nPlease connect to DTP_port";
+
     SendResponse(resp);
     return 0;
 }
@@ -132,7 +129,7 @@ bool HelpCommand::isCorrect(){
 }
 
 void HelpCommand::handleFaultyCommand(){
-    // std::string err_msg = 
+    // std::string err_msg =
 
 }
 
