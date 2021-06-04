@@ -31,7 +31,7 @@ FTPServer::FTPServer(char *nip_addr, char *nport){
 
 int FTPServer::Start(){
 
-    struct sockaddr_in server, client;
+    struct sockaddr_in client;
     int msgsock;
     unsigned int cliaddrlen = sizeof(client);
 
@@ -107,7 +107,11 @@ void FTPServer::PassClientToServe(int msgsock, struct sockaddr_in &cliaddr){
     args->cliport = cliaddr.sin_port;
 
     int res = CreateThread(&tid, NULL, CreateServerPI, (void *)args);
- 
+    
+    if(res>0) {
+        std::cout << "Create thread error";
+        // 
+    }
 
     // Pthread_create(NULL, NULL, CreateServerPI, (void *)&args);
     // Pthread_join(tid, NULL);

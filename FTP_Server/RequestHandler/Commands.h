@@ -7,7 +7,8 @@
 #include "RequestHandler.h"
 #include "helpStringsOperations.h"
 #include "../Filesystem/FileSystem.h"
-#include "../Authentication/Authentication.h"
+#include "../Database/AuthenticationDB.h"
+
 
 
 class StringShapeCommand : public Command {
@@ -22,26 +23,27 @@ protected:
     std::string command;
     std::vector<std::string> args;
 
-    int argumentsMinimum;
-    int argumentsMaximum;
+    unsigned int argumentsMinimum;
+    unsigned int argumentsMaximum;
     std::string commandDescription;
     std::vector<std::string> argsNames;
 
 public:
 
+    // ~StringShapeCommand(){}
     StringShapeCommand(std::string str){
         command = str;
         splitArguments();
     }  
 
     void printHelp(){
-        std::cout << "Command: " << argsNames[0] << std::endl;
-        std::vector<std::string>::iterator it = argsNames.begin();
-        std::cout << "Usage: " << *it;
-        ++it;
-    for (it ; it != argsNames.end(); ++it)
-        std::cout << " [ " << *it << " ] ";
-        std::cout << std::endl << commandDescription << std::endl;
+    //     std::cout << "Command: " << argsNames[0] << std::endl;
+    //     std::vector<std::string>::iterator it = argsNames.begin();
+    //     std::cout << "Usage: " << *it;
+    //     ++it;
+    // for (it ; it != argsNames.end(); ++it)
+    //     std::cout << " [ " << *it << " ] ";
+    //     std::cout << std::endl << commandDescription << std::endl;
     }
 
     bool isCorrect(){
@@ -73,7 +75,8 @@ class LoginCommand : public StringShapeCommand {
 private:
     RequestHandler *rq;
 public:
-    LoginCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    LoginCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 3;
         argumentsMaximum = 3;
         commandDescription = "Connects and logins user to the server";
@@ -87,15 +90,15 @@ public:
         Response response;
         std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
 
-        Authentication auth;
-        bool issuccess = auth.login(args.at(1), args.at(2));
-        if( issuccess ){
-            response.err_code = 230;    // success - logged 
-            response.msg_response = "OK, you have been logged in";
-        }else{
-            response.err_code = 530;    // wrong login or password
-            response.msg_response = "Login error, wrong username or password";
-        }
+        AuthenticationDB auth;
+        // bool issuccess = auth.login(args.at(1), args.at(2));
+        // if( issuccess ){
+        //     response.err_code = 230;    // success - logged 
+        //     response.msg_response = "OK, you have been logged in";
+        // }else{
+        //     response.err_code = 530;    // wrong login or password
+        //     response.msg_response = "Login error, wrong username or password";
+        // }
 
         // send response to client 
         ((ServerPI*)rq)->SendResponse(response);
@@ -108,7 +111,8 @@ class LogoutCommand : public StringShapeCommand {
 private:
     RequestHandler *rq;
 public:
-    LogoutCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    LogoutCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 1;
         argumentsMaximum = 1;
         commandDescription = "Logouts and disconnects user from server";
@@ -138,7 +142,8 @@ class UploadCommand : public StringShapeCommand {
 private:
     RequestHandler *rq;
 public:
-    UploadCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    UploadCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Uploads file to the server";
@@ -169,7 +174,8 @@ public:
 class DownloadCommand : public StringShapeCommand {
     RequestHandler *rq;
 public:
-    DownloadCommand(RequestHandler *request_handler, std::string string) : rq(request_handler),  StringShapeCommand(string) {
+    DownloadCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Downloads file from the server";
@@ -189,7 +195,8 @@ private:
     RequestHandler *rq;
 
 public:
-    MkdirCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    MkdirCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Creates new directory in current directory";
@@ -207,7 +214,8 @@ class CdCommand : public StringShapeCommand {
 private:
     RequestHandler *rq;
 public:
-    CdCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    CdCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Changes directory";
@@ -225,7 +233,8 @@ class ListCommand : public StringShapeCommand {
 private:
     RequestHandler *rq;
 public:
-    ListCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    ListCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
+        rq = request_handler;
         argumentsMinimum = 1;
         argumentsMaximum = 1;
         commandDescription = "Lists files and directories in current directory";

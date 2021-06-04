@@ -64,7 +64,7 @@ int Inet_pton(int family, const char *strptr, void *addrptr){
 
 const char *Inet_ntop(int family, const void *addrptr, char *strptr, size_t len){
     const char *result = inet_ntop(family, addrptr, strptr, len);
-    if( inet_ntop == NULL ){
+    if( result == NULL ){
         perror("inet_ntop function");
         exit(1);
     }
@@ -105,7 +105,7 @@ ssize_t Send(int sockfd, const void *buff, size_t nbytes, int flags){
     int result = send(sockfd, buff,  nbytes, flags);
     if( result < 0 ){
         perror("sending data");
-        // exit(1);
+        exit(1);
     }
     return result;
 }
@@ -141,7 +141,7 @@ int SendMsg(int msgsocket, std::string msg){
 */
 int ReceiveMsg(int msgsocket, std::string &msg, int rcvbuf_size, int flags ){
 
-    char msg_buf[rcvbuf_size+1]; // last byte for '\0'
+    char *msg_buf= new char[rcvbuf_size+1]; // last byte for '\0'
     // msg_buf[rcvbuf_size-1] = 
     msg.clear();
     int ndata;
@@ -152,13 +152,14 @@ int ReceiveMsg(int msgsocket, std::string &msg, int rcvbuf_size, int flags ){
             msg.append(msg_buf);
         }
     }while(msg_buf[ndata-1] != '\0');// we read entire message (until get char which means that msg ends)
+    delete msg_buf;
 
     return 0;
 }
 
 
 int ReadMsg(int msgsocket, std::string &msg, int rcvbuf_size){
-    char msg_buf[rcvbuf_size];
+    char *msg_buf = new char[rcvbuf_size];
     // msg_buf[rcvbuf_size-1] = 
     msg.clear();
     int ndata;
@@ -169,6 +170,7 @@ int ReadMsg(int msgsocket, std::string &msg, int rcvbuf_size){
             msg.append(msg_buf);
         }
     }while(msg_buf[ndata-1] != '\0');// we read entire message (until get char which means that msg ends)
+    delete msg_buf;
 
     return 0;
 }
