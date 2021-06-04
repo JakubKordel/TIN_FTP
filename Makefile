@@ -7,14 +7,12 @@ FSYSTEM_PATH=FTP_Server/Filesystem
 
 FTP_Server: Server
 
-Server: obj libs DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
+Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
 	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o  obj/AuthenticationDB.o obj/readCsv.o obj/Database.o obj/passwordHashing.o obj/sha1.o -o Server -lpthread
 
 # it needs dirs for object files and static library files
 obj:
 	mkdir obj
-libs:
-	mkdir libs
 
 
 main:
