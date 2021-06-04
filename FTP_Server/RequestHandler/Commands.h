@@ -90,10 +90,10 @@ public:
         Authentication auth;
         bool issuccess = auth.login(args.at(1), args.at(2));
         if( issuccess ){
-            response.err_code = 0;
+            response.err_code = 230;    // success - logged 
             response.msg_response = "OK, you have been logged in";
         }else{
-            response.err_code = 1;
+            response.err_code = 530;    // wrong login or password
             response.msg_response = "Login error, wrong username or password";
         }
 
@@ -118,14 +118,14 @@ public:
     void handle(){
         Response response;
         
-        if(rq->IsLogged() == false){
+        if(!rq->IsLogged()){
             // user is not logged in generate error
-            response.err_code = 1;
+            response.err_code = 531;
             response.msg_response = "Logout error, you are not logged";
         }else{
             rq->ResetLogged();
             rq->SetUsername("");
-            response.err_code = 0;
+            response.err_code = 231;
             response.msg_response = "OK, you have been logged out";
         }
 
@@ -151,7 +151,7 @@ public:
         std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
         
         if( rq->IsLogged() ){
-            response.err_code = 2; //u are LOGGED_OUT
+            response.err_code = 531; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
             std::string data = rq->getData();

@@ -2,10 +2,20 @@ CFLAGS=-Wall -pedantic -std=c++17 -g
 AUTH_PATH=FTP_Server/Authentication
 FSYSTEM_PATH=FTP_Server/Filesystem
 
+
+	
+
 FTP_Server: Server
 
-Server: Auth_st_lib ReqHandler ServerPI ServerDTP FTPServer main Filesystem
+Server: obj libs Auth_st_lib ReqHandler ServerPI ServerDTP FTPServer main Filesystem
 	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o libs/Auth.a -o Server -lpthread
+
+# it needs dirs for object files and static library files
+obj:
+	mkdir obj
+libs:
+	mkdir libs
+
 
 main:
 	g++ -c $(CFLAGS) main.cpp -o obj/main.o
@@ -44,8 +54,10 @@ sha1:
 
 Filesystem:
 	g++ -c $(CFLAGS) $(FSYSTEM_PATH)/FileSystem.cpp -o obj/FileSystem.o
+	
 
-
+	
 
 clean:
-	rm -f obj/*.o libs/*.a
+	rm -r obj
+	rm -r libs

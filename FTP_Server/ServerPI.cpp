@@ -37,10 +37,8 @@ void ServerPI::Greeting(){
 
 int ServerPI::SendResponse(Response resp){
     std::string msg;
-    if( resp.err_code != 0 ){
-        msg = std::to_string(curr_operation);
-    }
     msg.append(std::to_string(resp.err_code));
+    msg.push_back(' ');
     msg.append(resp.msg_response);
     SendMsg(msgsocket, msg);
 
@@ -106,11 +104,16 @@ int ServerPI::bindServerDTP(int sock){
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(0);
+    server.sin_port = htons(0); // 
+
+
 
     Bind(sock, (struct sockaddr *) &server, sizeof(server) );
 
-    return DTP_PORT;
+    unsigned int length = sizeof(server);
+    Getsockname( sock, (struct sockaddr *) &server, &length );
+    
+    return server.sin_port; // return port for DTP connection
 }
 
 void ServerPI::returnResponse(Response resp){
