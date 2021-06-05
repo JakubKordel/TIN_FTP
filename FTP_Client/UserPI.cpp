@@ -58,9 +58,9 @@
   }
 
   UserPI::~UserPI(){
-    if (isOpen()){
+    /*if (isOpen()){
       closeConnection();
-    }
+    }*/
   }
 
   std::string UserPI::getServerName(){

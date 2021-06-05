@@ -1,7 +1,7 @@
 #include "RequestHandler.h"
 
 void RequestHandler::Run(){
-    while (!exit) {
+    while (!exitHandler) {
         Command * command = nextCommand();
         if (command == nullptr){
             // unknown command

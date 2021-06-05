@@ -91,17 +91,17 @@ public:
         std::string password;
 
         if (args.size() == 1) {
-          response.status_code = "3xx";
+          response.status_code = "330";
           response.msg_response = " Put your login: ";
           ((ServerPI*)rq)->SendResponse(response);
           login = ((ServerPI*)rq)->WaitForRequest();
-          response.status_code = "3xx";
+          response.status_code = "331";
           response.msg_response = " Put your password: ";
           ((ServerPI*)rq)->SendResponse(response);
           password = ((ServerPI*)rq)->WaitForRequest();
         }
         else if (args.size() == 2) {
-          response.status_code = "3xx";
+          response.status_code = "331";
           response.msg_response = " Put your password: ";
           ((ServerPI*)rq)->SendResponse(response);
           login = args[1];
@@ -116,10 +116,10 @@ public:
         AuthenticationDB auth;
         bool issuccess = auth.login(login, password);
         if( issuccess ){
-            response.status_code = "2xx";
+            response.status_code = "530";
             response.msg_response = " OK, you have been logged in";
         }else{
-            response.status_code = "2xx";
+            response.status_code = "530";
             response.msg_response = " Login error, wrong username or password";
         }
 
@@ -144,7 +144,7 @@ public:
 
     void handle(){
         Response response;
-        
+
         if(!rq->IsLogged()){
             // user is not logged in generate error
             response.status_code = "531";
@@ -186,7 +186,7 @@ public:
             ChecksumDB db;
             std::string data = rq->getData();
             // ServerPI got from the ServerDTP data to save on disc
-            
+
             if (db.fileExists(args.at(1), data)) {
                 response.status_code = "552"; //u are LOGGED_OUT
                 response.msg_response = "Error uploading, file with this name or content already exists";
@@ -236,7 +236,7 @@ public:
             if (code == 0) {
                 // read OK
                 ((ServerPI*)rq)->sendData(data);
-                response.status_code = "200"; 
+                response.status_code = "200";
                 response.msg_response = "OK, your file has been downloaded successfully";
             }
             else if (code == -1 || code == -2) {

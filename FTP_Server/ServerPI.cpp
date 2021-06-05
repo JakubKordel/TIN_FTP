@@ -47,6 +47,12 @@ int ServerPI::SendResponse(Response resp){
 
 Command* ServerPI::nextCommand() {
     std::string req = WaitForRequest();
+    if (req == ""){
+      close(msgsocket);
+      std::cout << "Server got empty request, exiting";
+      exit(0);
+    }
+
     std::string comm_name = getFirstWord(req);
 
     Command *command = nullptr;
@@ -65,9 +71,10 @@ Command* ServerPI::nextCommand() {
 
 void ServerPI::handleNoCommandFault() {
     // unknown command - send error to client
+    std::string stop;
+    std::cin >> stop;
     std::cout << "Handle no command fault\n";
     std::string msg = "Unknown command";
-
 
 }
 
@@ -121,7 +128,7 @@ int ServerPI::bindServerDTP(int sock){
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = htons(0); // 
+    server.sin_port = htons(0); //
 
 
 
@@ -129,7 +136,7 @@ int ServerPI::bindServerDTP(int sock){
 
     unsigned int length = sizeof(server);
     Getsockname( sock, (struct sockaddr *) &server, &length );
-    
+
     return server.sin_port; // return port for DTP connection
 }
 

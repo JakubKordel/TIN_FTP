@@ -17,7 +17,7 @@ obj:
 
 # jesli <filesystem> nieobslugiwany
 Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
-	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o  obj/AuthenticationDB.o obj/readCsv.o obj/Database.o obj/passwordHashing.o obj/sha1.o -o Server -lpthread -lstdc++fs
+	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o  obj/AuthenticationDB.o obj/readCsv.o obj/Database.o obj/passwordHashing.o obj/sha1.o obj/ChecksumDB.o -o Server -lpthread -lstdc++fs
 
 
 main:
@@ -37,11 +37,15 @@ ReqHandler:
 
 
 
-DB: Auth ReadCsv Database PassHashing sha1
+DB: Auth ReadCsv Database PassHashing sha1 Checksum
 	
 
 Auth:
 	g++ -c $(CFLAGS) $(DB_PATH)/AuthenticationDB.cpp -o obj/AuthenticationDB.o
+
+
+Checksum:
+	g++ -c $(CFLAGS) $(DB_PATH)/ChecksumDB.cpp -o obj/ChecksumDB.o
 
 ReadCsv:
 	g++ -c $(CFLAGS) $(DB_PATH)/readCsv.cpp -o obj/readCsv.o

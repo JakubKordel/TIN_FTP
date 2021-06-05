@@ -20,7 +20,7 @@ protected:
     const std::string root_path = "~/Student/semestr_6/TIN/Projekt/Program/TIN_FTP";
 
 private:
-    bool exit = false;
+    bool exitHandler = false;
 
     int err = 0;
 
@@ -55,7 +55,7 @@ private:
 
 protected:
     void stopCommandHandler(){
-        rh->exit = true;
+        rh->exitHandler = true;
     }
 
 public:
