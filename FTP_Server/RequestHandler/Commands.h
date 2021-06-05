@@ -241,8 +241,8 @@ public:
                     response.msg_response = "Error creating directory";
                     break;
             }
-            ((ServerPI *)rq)->SendResponse(response);
         }
+        ((ServerPI *)rq)->SendResponse(response);
     }
 };
 
@@ -282,9 +282,9 @@ public:
                 response.msg_response = "Error changing directory, directory not found";
                 break;
             }
-            ((ServerPI*)rq)->SendResponse(response);
-            std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
         }
+        ((ServerPI*)rq)->SendResponse(response);
+        std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
     }
 };
 
