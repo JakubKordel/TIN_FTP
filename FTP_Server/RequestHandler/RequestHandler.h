@@ -3,6 +3,7 @@
 #include <string>
 #include <exception>
 #include <vector>
+#include <iostream>
 
 #include "ClientState.h"
 
@@ -18,9 +19,9 @@ class RequestHandler: public ClientState {
 
 protected:
     const std::string root_path = "~/Student/semestr_6/TIN/Projekt/Program/TIN_FTP";
+    bool exit = false;
 
 private:
-    bool exit = false;
 
     int err = 0;
 

@@ -52,7 +52,7 @@ public:
 	}
 
   void handleCommand(){
-      if (args[1] == "--help")
+      if ( args.size() >= 2 && args[1] == "--help")
       printHelp();
         else
       handle();
@@ -81,18 +81,22 @@ public:
 };
 
 class LoginCommand : public StringShapeCommand {
-  UserPI upi;
+  UserPI &upi;
 public:
-	LoginCommand(std::string string, UserPI & userPI) : StringShapeCommand(string) , upi(userPI){
+	LoginCommand(std::string string, UserPI &userPI) : StringShapeCommand(string), upi(userPI){
+      // upi = userPI;
 			argumentsMinimum = 1;
 			argumentsMaximum = 3;
 			commandDescription = "Logins user to the server";
 			argsNames.push_back("login");
       argsNames.push_back("username");
 			argsNames.push_back("password");
+
 	}
 
 	void handle(){
+
+    std::cout << "Login handle\n";
     std::string response;
     std::string msg;
     bool commandHandlingFinished = false;
@@ -105,7 +109,7 @@ public:
       } else if (response[0] == '2') {
         commandHandlingFinished = true;
       } else if (response[0] == '3'){
-        std::cin >> msg;
+        getline(std::cin, msg);
         upi.sendMsgToServer(msg);
       } else if (response[0] == '4'){
           commandHandlingFinished = true;
@@ -140,7 +144,7 @@ public:
       } else if (response[0] == '2') {
         commandHandlingFinished = true;
       } else if (response[0] == '3'){
-        std::cin >> msg;
+        getline(std::cin, msg);
         upi.sendMsgToServer(msg);
       } else if (response[0] == '4'){
           commandHandlingFinished = true;
@@ -175,7 +179,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg);
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
@@ -211,7 +215,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg);
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
@@ -248,7 +252,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg);
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
@@ -284,7 +288,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg);
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
@@ -318,7 +322,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg);
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;

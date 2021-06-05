@@ -3,9 +3,9 @@ DB_PATH=FTP_Server/Database
 FSYSTEM_PATH=FTP_Server/Filesystem
 
 
-	
-
 FTP_Server: Server
+
+Client: mainUI
 
 # jesli <filesystem> obslugiwany
 Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
@@ -63,7 +63,7 @@ Filesystem:
 	
 
 mainUI:
-	g++ FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserPI.h FTP_Client/UserPI.cpp  -lpthread -o ftp_ui
+	g++ FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserPI.h FTP_Client/UserPI.cpp  -lpthread -o client
 
 clean:
 	rm -r obj

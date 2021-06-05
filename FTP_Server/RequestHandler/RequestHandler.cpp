@@ -2,6 +2,7 @@
 
 void RequestHandler::Run(){
     while (!exit) {
+        std::cout << "Wait for next command from client\n";
         Command * command = nextCommand();
         if (command == nullptr){
             // unknown command
@@ -15,8 +16,6 @@ void RequestHandler::Run(){
                 command->handleFaultyCommand();
             }
             delete(command);
-            
-            exit = 1;
         }
     }
 }

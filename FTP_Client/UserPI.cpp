@@ -13,6 +13,9 @@
     }
   }
 
+
+  // UserPI::UserPI(UserPI upi);
+
   int UserPI::connectToServer(std::string serverName, int serverPort){
     server.sin_family = AF_INET;
     hp = gethostbyname(serverName.c_str());

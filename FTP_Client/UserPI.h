@@ -25,6 +25,7 @@ class UserPI {
   public:
 
   UserPI();
+  // UserPI(UserPI upi);
 
   int connectToServer(std::string serverName, int serverPort);
 

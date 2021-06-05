@@ -30,7 +30,7 @@ private:
     int SendDTPPort(int port);
     void *ServeClient(void* arg);
     void Greeting();
-    int bindServerDTP(int sock);
+    short bindServerDTP(int sock);
 
     void handleNoCommandFault() override;
     Command *nextCommand() override;

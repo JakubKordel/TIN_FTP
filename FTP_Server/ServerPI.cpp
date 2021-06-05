@@ -67,17 +67,18 @@ void ServerPI::handleNoCommandFault() {
     // unknown command - send error to client
     std::cout << "Handle no command fault\n";
     std::string msg = "Unknown command";
-
-
+    exit = true;
 }
 
 std::string ServerPI::getData(){
     int datasock = 0;
-    int port;
+    short port;
     std::string data;
 
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
     port = bindServerDTP(datasock);
+
+    std::cout << "DTP connection port: " << ntohs(port);
 
     if(port>0){
         SendDTPPort(port);
@@ -99,7 +100,7 @@ int ServerPI::SendDTPPort(int port){
     return 0;
 }
 
-int ServerPI::bindServerDTP(int sock){
+short ServerPI::bindServerDTP(int sock){
     struct sockaddr_in server;
 
     server.sin_family = AF_INET;
