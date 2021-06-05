@@ -34,7 +34,7 @@ public:
     StringShapeCommand(std::string str){
         command = str;
         splitArguments();
-    }  
+    }
 
     void printHelp(){
     //     std::cout << "Command: " << argsNames[0] << std::endl;
@@ -52,7 +52,7 @@ public:
 
     void handleFaultyCommand(){
         Response response;
-        response.err_code = 1;
+        response.status_code = "xxx";
         response.msg_response = "Too many / less arguments\n"
                                 "See help for more information";
         std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
@@ -77,32 +77,56 @@ private:
 public:
     LoginCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
         rq = request_handler;
-        argumentsMinimum = 3;
+        argumentsMinimum = 1;
+
         argumentsMaximum = 3;
         commandDescription = "Connects and logins user to the server";
         argsNames.push_back("login");
         argsNames.push_back("username");
         argsNames.push_back("password");
-        argsNames.push_back("serveradress");
     }
 
     void handle(){
         Response response;
-        std::cout << std::endl << "I AM HANDLING LOGIN COMMAND" << std::endl;
+        std::string login;
+        std::string password;
+
+        if (args.size() == 1) {
+          response.status_code = "3xx";
+          response.msg_response = " Put your login: ";
+          ((ServerPI*)rq)->SendResponse(response);
+          login = ((ServerPI*)rq)->WaitForRequest();
+          response.status_code = "3xx";
+          response.msg_response = " Put your password: ";
+          ((ServerPI*)rq)->SendResponse(response);
+          password = ((ServerPI*)rq)->WaitForRequest();
+        }
+        else if (args.size() == 2) {
+          response.status_code = "3xx";
+          response.msg_response = " Put your password: ";
+          ((ServerPI*)rq)->SendResponse(response);
+          login = args[1];
+          password = ((ServerPI*)rq)->WaitForRequest();
+        }
+
+        else if (args.size() == 3) {
+          login = args[1];
+          password = args[2];
+        }
 
         AuthenticationDB auth;
-        // bool issuccess = auth.login(args.at(1), args.at(2));
-        // if( issuccess ){
-        //     response.err_code = 230;    // success - logged 
-        //     response.msg_response = "OK, you have been logged in";
-        // }else{
-        //     response.err_code = 530;    // wrong login or password
-        //     response.msg_response = "Login error, wrong username or password";
-        // }
+        bool issuccess = auth.login(login, password);
+        if( issuccess ){
+            response.status_code = "2xx";
+            response.msg_response = " OK, you have been logged in";
+        }else{
+            response.status_code = "2xx";
+            response.msg_response = " Login error, wrong username or password";
+        }
 
-        // send response to client 
+        // send response to client
         ((ServerPI*)rq)->SendResponse(response);
-
+        std::cout << std::endl << "I HANDLED LOGIN COMMAND" << std::endl;
     }
 };
 
@@ -124,13 +148,14 @@ public:
         
         if(!rq->IsLogged()){
             // user is not logged in generate error
-            response.err_code = 531;
+            response.status_code = "531";
             response.msg_response = "Logout error, you are not logged";
         }else{
             rq->ResetLogged();
             rq->SetUsername("");
-            response.err_code = 231;
+            response.status_code = "231";
             response.msg_response = "OK, you have been logged out";
+
         }
 
         ((ServerPI *)rq)->SendResponse(response);
@@ -154,9 +179,9 @@ public:
     void handle(){
         Response response;
         std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
-        
+
         if( rq->IsLogged() ){
-            response.err_code = 531; //u are LOGGED_OUT
+            response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
             std::string data = rq->getData();
@@ -167,7 +192,7 @@ public:
             // send response
 
         }
-        
+
     }
 };
 
@@ -186,7 +211,7 @@ public:
     void handle(){
         Response response;
         std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
-        
+
     }
 };
 
@@ -204,15 +229,35 @@ public:
         argsNames.push_back("directoryname");
     }
 
-    void handle(){
+    void handle() {
         Response response;
-        std::cout << std::endl << "I AM CREATING NEW DIRECTORY ON THE SERVER" << std::endl;
+        if (rq->IsLogged()) {
+            response.status_code = "200"; // u are LOGGED_OUT
+            response.msg_response = "Error creating directory, you have to be logged in to create directories";
+        } else {
+            int result = FileSystem::MakeDir(rq->GetCurrPath(), args.at(1));
+            switch (result) {
+                case 0:
+                    response.status_code = "0";
+                    response.msg_response = "OK, directory created successfully";
+                    break;
+                case 1:
+                    response.status_code = "5";
+                    response.msg_response = "Error creating directory, directory already exists";
+                    break;
+                case 2:
+                    response.status_code = "6";
+                    response.msg_response = "Error creating directory";
+                    break;
+            }
+        }
+        ((ServerPI *)rq)->SendResponse(response);
     }
 };
 
 class CdCommand : public StringShapeCommand {
 private:
-    RequestHandler *rq;
+    RequestHandler* rq;
 public:
     CdCommand(RequestHandler *request_handler, std::string string) : StringShapeCommand(string) {
         rq = request_handler;
@@ -223,8 +268,32 @@ public:
         argsNames.push_back("directoryname or ..");
     }
 
-    void handle(){
+    void handle() {
         Response response;
+        if (rq->IsLogged()) {
+            response.status_code = "4"; // u are LOGGED_OUT
+            response.msg_response = "Error creating directory, you have to be logged in to create directories";
+        }
+        else {
+            std::string result = "";
+            int code = FileSystem::ChangeDirectory(result, rq->GetRootPath(), rq->GetCurrPath(), args.at(1));
+            switch (code) {
+            case 0:
+                rq->SetCurrPath(result);
+                response.status_code = "0";
+                response.msg_response = "OK, directory changed successfully";
+                break;
+            case -1:
+                response.status_code = "7";
+                response.msg_response = "Error changing directory, tried changing directory to above root";
+                break;
+            case -2:
+                response.status_code = "8";
+                response.msg_response = "Error changing directory, directory not found";
+                break;
+            }
+        }
+        ((ServerPI*)rq)->SendResponse(response);
         std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
     }
 };

@@ -7,6 +7,7 @@ FSYSTEM_PATH=FTP_Server/Filesystem
 
 FTP_Server: Server
 
+# jesli <filesystem> obslugiwany
 Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
 	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o  obj/AuthenticationDB.o obj/readCsv.o obj/Database.o obj/passwordHashing.o obj/sha1.o -o Server -lpthread
 
@@ -14,12 +15,16 @@ Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
 obj:
 	mkdir obj
 
+# jesli <filesystem> nieobslugiwany
+# Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
+# 	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o libs/Auth.a -o Server -lpthread -lstdc++fs
+
 
 main:
-	g++ -c $(CFLAGS) main.cpp -o obj/main.o
+	g++ -c $(CFLAGS) -lstdc++fs main.cpp -lstdc++fs -o obj/main.o 
 
 FTPServer:
-	g++ -c $(CFLAGS) FTP_Server/FTPServer.cpp -o obj/FTPServer.o
+	g++ -c $(CFLAGS) FTP_Server/FTPServer.cpp -o obj/FTPServer.o 
 
 ServerPI:
 	g++ -c $(CFLAGS) FTP_Server/ServerPI.cpp -o obj/ServerPI.o
@@ -50,12 +55,15 @@ PassHashing:
 sha1:
 	g++ -c $(CFLAGS) $(DB_PATH)/HashFunctions/sha1.cpp -o obj/sha1.o
 
-Filesystem:
+# jesli <filesystem> nieobslugiwany
+# 	g++ -c $(CFLAGS) $(DB_PATH)/HashFunctions/sha1.cpp -lstdc++fs -o obj/sha1.o
+
+Filesystem: 
 	g++ -c $(CFLAGS) $(FSYSTEM_PATH)/FileSystem.cpp -o obj/FileSystem.o
 	
 
-	
+mainUI:
+	g++ FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserPI.h FTP_Client/UserPI.cpp  -lpthread -o ftp_ui
 
 clean:
 	rm -r obj
-	rm -r libs

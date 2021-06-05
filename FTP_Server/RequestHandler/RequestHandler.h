@@ -21,16 +21,16 @@ protected:
 
 private:
     bool exit = false;
-    
+
     int err = 0;
 
 public:
     void Run();
     virtual Command * nextCommand() = 0;
     virtual void returnResponse(struct Response resp) = 0;
-    
+
     virtual std::string getData() = 0;
-    
+
 protected:
     virtual void handleNoCommandFault() = 0;
 
@@ -43,8 +43,7 @@ private:
 };
 
 struct Response{
-    int err_code;       // 0 if correct; error code otherwise
-    int operation;              //
+    std::string status_code;       // 3 digits
     std::string msg_response;   // response to send to client
 };
 

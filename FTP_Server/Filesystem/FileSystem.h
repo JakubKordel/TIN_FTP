@@ -2,10 +2,21 @@
 
 #include <string>
 #include <fstream>
+
+// jesli <filesystem> nieobslugiwany
+
+// #include <experimental/filesystem>
+// namespace fs = std::experimental::filesystem;
+
+// * * * * * * * * * * * *
+
+// jesli <filesystem> obslugiwany
 #include <filesystem>
+namespace fs = std::filesystem;
+
 #include <exception>
 
-namespace fs = std::filesystem;
+// 
 
 class FileSystem{
 
