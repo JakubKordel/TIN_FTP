@@ -234,11 +234,11 @@ public:
                     break;
                 case 1:
                     response.err_code = 5;
-                    response.msg_response = "Error creating directory, directory already exists"
+                    response.msg_response = "Error creating directory, directory already exists";
                     break;
                 case 2:
                     response.err_code = 6;
-                    response.msg_response = "Error creating directory"
+                    response.msg_response = "Error creating directory";
                     break;
             }
             ((ServerPI *)rq)->SendResponse(response);
@@ -248,9 +248,9 @@ public:
 
 class CdCommand : public StringShapeCommand {
 private:
-    RequestHandler *rq;
+    RequestHandler* rq;
 public:
-    CdCommand(RequestHandler *request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
+    CdCommand(RequestHandler* request_handler, std::string string) : rq(request_handler), StringShapeCommand(string) {
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Changes directory";
@@ -258,9 +258,33 @@ public:
         argsNames.push_back("directoryname or ..");
     }
 
-    void handle(){
+    void handle() {
         Response response;
-        std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
+        if (rq->IsLogged()) {
+            response.status_code = 4; // u are LOGGED_OUT
+            response.msg_response = "Error creating directory, you have to be logged in to create directories";
+        }
+        else {
+            std::string result = "";
+            int code = FileSystem::ChangeDirectory(result, rq->GetRootPath(), rq->GetCurrPath(), args.at(1));
+            switch (code) {
+            case 0:
+                rq->SetCurrPath(result);
+                response.status_code = 0;
+                response.msg_response = "OK, directory changed successfully";
+                break;
+            case -1:
+                response.status_code = 7;
+                response.msg_response = "Error changing directory, tried changing directory to above root";
+                break;
+            case -2:
+                response.status_code = 8;
+                response.msg_response = "Error changing directory, directory not found";
+                break;
+            }
+            ((ServerPI*)rq)->SendResponse(response);
+            std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
+        }
     }
 };
 
