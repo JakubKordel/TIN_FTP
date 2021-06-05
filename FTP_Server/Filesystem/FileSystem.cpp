@@ -5,7 +5,7 @@
 
 
 int FileSystem::SaveFile(std::string full_path, std::string file_content){
-    int start_filename = full_path.find_last_of(PATH_SEPARATOR);
+    unsigned int start_filename = full_path.find_last_of(PATH_SEPARATOR);
     if(start_filename < 0 || start_filename >= full_path.length() - 1 ){
         // error - wrong path or filename
         return -1;

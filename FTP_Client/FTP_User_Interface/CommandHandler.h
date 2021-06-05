@@ -7,6 +7,7 @@
 
 class Command {
 public:
+  virtual ~Command() = default;
   virtual void handleCommand() = 0;
   virtual bool isCorrect() = 0;
   virtual void handleFaultyCommand() = 0;

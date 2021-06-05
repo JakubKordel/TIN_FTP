@@ -14,7 +14,7 @@ bool Database::exists(std::string s1, std::string s2, bool strict)
     }
     return false;
 }
-void Database::addToDatabse(std::string s1, std::string s2)
+void Database::addToDatabase(std::string s1, std::string s2)
 {
     std::ofstream out;
 
@@ -22,5 +22,5 @@ void Database::addToDatabse(std::string s1, std::string s2)
     // new data will be written to the end of the file.
     out.open(this->dbPath, std::ios::app);
     out << s1 << "," << s2 << '\n';
-    this->db = readCsv(dbPath);
+    this->db = readCsv(dbPath);// to nie dziala!
 }

@@ -48,6 +48,15 @@ struct crc32
 		std::string crc = std::to_string(update(table, 0, str.c_str(), length));
 		return crc;
 	}
+
+	static std::string getStringCrc(std::string str){
+		const int length = str.length();
+
+		uint32_t table[256] = { 0 };
+		generate_table(table);
+		std::string crc = std::to_string(update(table, 0, str.c_str(), length));
+		return crc; 
+	}
 };
 
 

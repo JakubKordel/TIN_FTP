@@ -1,11 +1,24 @@
 CFLAGS=-Wall -pedantic -std=c++17 -g
-AUTH_PATH=FTP_Server/Authentication
+DB_PATH=FTP_Server/Database
 FSYSTEM_PATH=FTP_Server/Filesystem
+
+
+	
 
 FTP_Server: Server
 
-Server: Auth_st_lib ReqHandler ServerPI ServerDTP FTPServer main Filesystem
-	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o libs/Auth.a -o Server -lpthread -lstdc++fs
+# jesli <filesystem> obslugiwany
+Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
+	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o  obj/AuthenticationDB.o obj/readCsv.o obj/Database.o obj/passwordHashing.o obj/sha1.o -o Server -lpthread
+
+# it needs dirs for object files and static library files
+obj:
+	mkdir obj
+
+# jesli <filesystem> nieobslugiwany
+# Server: obj DB ReqHandler ServerPI ServerDTP FTPServer main Filesystem
+# 	g++ obj/FTPServer.o obj/main.o obj/ServerPI.o obj/ServerDTP.o obj/RequestHandler.o obj/FileSystem.o libs/Auth.a -o Server -lpthread -lstdc++fs
+
 
 main:
 	g++ -c $(CFLAGS) -lstdc++fs main.cpp -lstdc++fs -o obj/main.o 
@@ -24,31 +37,33 @@ ReqHandler:
 
 
 
-Auth_st_lib: Auth ReadCsv Database PassHashing sha1
-	ar rvs libs/Auth.a obj/Authentication.o obj/readCsv.o obj/Database.o 
+DB: Auth ReadCsv Database PassHashing sha1
+	
 
 Auth:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/Authentication.cpp -o obj/Authentication.o
+	g++ -c $(CFLAGS) $(DB_PATH)/AuthenticationDB.cpp -o obj/AuthenticationDB.o
 
 ReadCsv:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/readCsv.cpp -o obj/readCsv.o
+	g++ -c $(CFLAGS) $(DB_PATH)/readCsv.cpp -o obj/readCsv.o
 
 Database:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/Database.cpp -o obj/Database.o
+	g++ -c $(CFLAGS) $(DB_PATH)/Database.cpp -o obj/Database.o
 
 PassHashing:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/HashFunctions/passwordHashing.cpp -o obj/passwordHashing.o
+	g++ -c $(CFLAGS) $(DB_PATH)/HashFunctions/passwordHashing.cpp -o obj/passwordHashing.o
 
 sha1:
-	g++ -c $(CFLAGS) $(AUTH_PATH)/HashFunctions/sha1.cpp -lstdc++fs -o obj/sha1.o
+	g++ -c $(CFLAGS) $(DB_PATH)/HashFunctions/sha1.cpp -o obj/sha1.o
+
+# jesli <filesystem> nieobslugiwany
+# 	g++ -c $(CFLAGS) $(DB_PATH)/HashFunctions/sha1.cpp -lstdc++fs -o obj/sha1.o
 
 Filesystem: 
 	g++ -c $(CFLAGS) $(FSYSTEM_PATH)/FileSystem.cpp -o obj/FileSystem.o
+	
 
 mainUI:
-	g++ -lpthread FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserPI.h FTP_Client/UserPI.cpp -o ftp_ui
-
-
+	g++ FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserPI.h FTP_Client/UserPI.cpp  -lpthread -o ftp_ui
 
 clean:
-	rm -f obj/*.o libs/*.a
+	rm -r obj
