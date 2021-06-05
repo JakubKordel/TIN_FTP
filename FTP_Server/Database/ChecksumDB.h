@@ -18,5 +18,5 @@ public:
     bool addToDBNewRecord(std::string filename, std::string content);
 
 private:
-    std::string DB_PATH = "/home/student/Student/semestr_6/TIN/Projekt/Program/TIN_FTP_testy/ChecksumDB/file_db.csv";
+    std::string DB_PATH = "./FTP_Server/Database/file_db.csv";
 };

@@ -25,6 +25,7 @@ public:
     int SendResponse(Response resp);
     std::string WaitForRequest();
     std::string getData() override;
+    void sendData(const std::string& data) override;
 
 private:
     int SendDTPPort(int port);

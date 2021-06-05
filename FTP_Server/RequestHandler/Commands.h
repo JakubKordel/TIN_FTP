@@ -8,8 +8,7 @@
 #include "helpStringsOperations.h"
 #include "../Filesystem/FileSystem.h"
 #include "../Database/AuthenticationDB.h"
-
-
+#include "../Database/ChecksumDB.h"
 
 class StringShapeCommand : public Command {
 private:
@@ -184,15 +183,26 @@ public:
             response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
+            ChecksumDB db;
             std::string data = rq->getData();
             // ServerPI got from the ServerDTP data to save on disc
-            std::string full_path = rq->GetCurrPath();
-            full_path.append(args.at(1));// concat current path and the filename
-            FileSystem::SaveFile(full_path, data);
-            // send response
+            
+            if (db.fileExists(args.at(1), data)) {
+                response.status_code = "552"; //u are LOGGED_OUT
+                response.msg_response = "Error uploading, file with this name or content already exists";
+            }
+            else {
+                db.addToDB(args.at(1), data); // adding new record to database
 
+                std::string full_path = rq->GetCurrPath();
+                full_path.append(args.at(1));// concat current path and the filename
+                FileSystem::SaveFile(full_path, data); // saving the file
+
+                response.status_code = "200"; //u are LOGGED_OUT
+                response.msg_response = "OK, your file has been uploaded";
+            }
         }
-
+        ((ServerPI*)rq)->SendResponse(response);
     }
 };
 
@@ -210,6 +220,38 @@ public:
 
     void handle(){
         Response response;
+
+        if (rq->IsLogged()) {
+            response.status_code = "531"; //u are LOGGED_OUT
+            response.msg_response = "Error downloading, you have to be logged in to download files";
+        }
+        else {
+            std::string data = "";
+            std::string full_path = rq->GetCurrPath();
+            full_path.append(args.at(1));// concat current path and the filename
+            int code = FileSystem::GetFile(data, full_path);
+            // code=0 if file read without problems
+            // code=-1 if file does not exist, code=-2 if other exception while opening file,
+            // code=-3 if some characters couldn't be read, code=-4 if other exception while reading file
+            if (code == 0) {
+                // read OK
+                ((ServerPI*)rq)->sendData(data);
+                response.status_code = "200"; 
+                response.msg_response = "OK, your file has been downloaded successfully";
+            }
+            else if (code == -1 || code == -2) {
+                // problem while opening file
+                response.status_code = "550";
+                response.msg_response = "Error downloading, your file could not be found";
+            }
+            else if (code == -3 || code == -4) {
+                // problem with reading characters from file
+                response.status_code = "200";
+                response.msg_response = "Error downloading, error while reading file's content";
+            }
+        }
+        ((ServerPI*)rq)->SendResponse(response);
+
         std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
 
     }
@@ -232,21 +274,21 @@ public:
     void handle() {
         Response response;
         if (rq->IsLogged()) {
-            response.status_code = "200"; // u are LOGGED_OUT
+            response.status_code = "531"; // u are LOGGED_OUT
             response.msg_response = "Error creating directory, you have to be logged in to create directories";
         } else {
             int result = FileSystem::MakeDir(rq->GetCurrPath(), args.at(1));
             switch (result) {
                 case 0:
-                    response.status_code = "0";
+                    response.status_code = "200";
                     response.msg_response = "OK, directory created successfully";
                     break;
                 case 1:
-                    response.status_code = "5";
+                    response.status_code = "551";
                     response.msg_response = "Error creating directory, directory already exists";
                     break;
                 case 2:
-                    response.status_code = "6";
+                    response.status_code = "554";
                     response.msg_response = "Error creating directory";
                     break;
             }
@@ -271,7 +313,7 @@ public:
     void handle() {
         Response response;
         if (rq->IsLogged()) {
-            response.status_code = "4"; // u are LOGGED_OUT
+            response.status_code = "531"; // u are LOGGED_OUT
             response.msg_response = "Error creating directory, you have to be logged in to create directories";
         }
         else {
@@ -280,15 +322,15 @@ public:
             switch (code) {
             case 0:
                 rq->SetCurrPath(result);
-                response.status_code = "0";
+                response.status_code = "200";
                 response.msg_response = "OK, directory changed successfully";
                 break;
             case -1:
-                response.status_code = "7";
+                response.status_code = "554";
                 response.msg_response = "Error changing directory, tried changing directory to above root";
                 break;
             case -2:
-                response.status_code = "8";
+                response.status_code = "553";
                 response.msg_response = "Error changing directory, directory not found";
                 break;
             }
@@ -312,7 +354,32 @@ public:
 
     void handle(){
         Response response;
-        std::cout << std::endl << "I AM LISTING FILES IN CURRENT DIRECTORY" << std::endl;
+
+        if (rq->IsLogged()) {
+            response.status_code = "531"; //u are LOGGED_OUT
+            response.msg_response = "Error listing files, you have to be logged in to list files";
+        }
+        else {
+            std::string list = "";
+            int code = FileSystem::List(list, rq->GetCurrPath());
+            // code=0 if file read without problems
+            // code=-1 if file does not exist, code=-2 if other exception while opening file,
+            // code=-3 if some characters couldn't be read, code=-4 if other exception while reading file
+            if (code == 0) {
+                // read OK
+                ((ServerPI*)rq)->sendData(list);
+                response.status_code = "200";
+                response.msg_response = "OK, the list has been sent to you";
+            }
+            else if (code == -1) {
+                // problem while opening file
+                response.status_code = "553";
+                response.msg_response = "Error listing";
+            }
+        }
+        ((ServerPI*)rq)->SendResponse(response);
+
+        std::cout << std::endl << "I AM LISTING FILES IN THE CURRENT PATH" << std::endl;
     }
 };
 

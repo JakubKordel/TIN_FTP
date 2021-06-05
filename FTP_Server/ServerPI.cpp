@@ -90,6 +90,23 @@ std::string ServerPI::getData(){
     return data;
 }
 
+void ServerPI::sendData(const std::string& data) {
+    int datasock = 0;
+    int port;
+
+    datasock = Socket(AF_INET, SOCK_STREAM, 0);
+    port = bindServerDTP(datasock);
+
+    if (port > 0) {
+        SendDTPPort(port);
+        ServerDTP dtp = ServerDTP(datasock, curr_operation, client_addr, data);
+        dtp.Run();
+    }
+    else {
+        // error
+    }
+}
+
 int ServerPI::SendDTPPort(int port){
     Response resp;
     resp.status_code = "xxx";
