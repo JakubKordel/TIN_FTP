@@ -190,7 +190,7 @@ public:
             response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
-            std::string data = rq->getData();
+            std::string data = ((ServerPI*)rq)->getData();
             // ServerPI got from the ServerDTP data to save on disc
             std::string full_path = rq->GetCurrPath();
             full_path.append(args.at(1));// concat current path and the filename

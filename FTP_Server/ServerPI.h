@@ -24,7 +24,7 @@ public:
     void PrintHelp();
     int SendResponse(Response resp);
     std::string WaitForRequest();
-    std::string getData() override;
+    std::string getData();
 
 private:
     int SendDTPPort(int port);
@@ -37,7 +37,10 @@ private:
     void returnResponse(Response resp) override;
 
     const std::string welcome_msg = "Welcome to FTP Server 1.0\nSend \"help\" to get information how to use server";
-    const int DTP_PORT = 22;
+    // const int DTP_PORT = 22;
+    const int UPLOAD_OP = 2;
+    const int DOWNLOAD_OP = 3;
+    
 };
 
 

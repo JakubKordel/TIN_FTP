@@ -78,7 +78,7 @@ std::string ServerPI::getData(){
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
     port = bindServerDTP(datasock);
 
-    std::cout << "DTP connection port: " << ntohs(port);
+    port = ntohs(port);
 
     if(port>0){
         SendDTPPort(port);
@@ -93,10 +93,15 @@ std::string ServerPI::getData(){
 
 int ServerPI::SendDTPPort(int port){
     Response resp;
-    resp.status_code = "xxx";
-    resp.msg_response = " DTP_port 22 \nPlease connect to DTP_port";
-
+    if(curr_operation==UPLOAD_OP) resp.status_code = "110";
+    else if(curr_operation==DOWNLOAD_OP) resp.status_code = "111";
+    resp.msg_response = "Please connect to this port:";
     SendResponse(resp);
+
+    if(curr_operation==UPLOAD_OP) resp.status_code = "530";
+    else if(curr_operation==DOWNLOAD_OP) resp.status_code = "531";
+    resp.msg_response = std::to_string(port);
+
     return 0;
 }
 

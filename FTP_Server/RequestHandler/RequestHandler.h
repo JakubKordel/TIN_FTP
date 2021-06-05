@@ -30,8 +30,6 @@ public:
     virtual Command * nextCommand() = 0;
     virtual void returnResponse(struct Response resp) = 0;
 
-    virtual std::string getData() = 0;
-
 protected:
     virtual void handleNoCommandFault() = 0;
 
