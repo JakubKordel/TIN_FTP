@@ -220,9 +220,29 @@ public:
         argsNames.push_back("directoryname");
     }
 
-    void handle(){
+    void handle() {
         Response response;
-        std::cout << std::endl << "I AM CREATING NEW DIRECTORY ON THE SERVER" << std::endl;
+        if (rq->IsLogged()) {
+            response.err_code = 4; // u are LOGGED_OUT
+            response.msg_response = "Error creating directory, you have to be logged in to create directories";
+        } else {
+            int result = FileSystem::MakeDir(rq->GetCurrPath(), args.at(1));
+            switch (result) {
+                case 0:
+                    response.err_code = 0;
+                    response.msg_response = "OK, directory created successfully";
+                    break;
+                case 1:
+                    response.err_code = 5;
+                    response.msg_response = "Error creating directory, directory already exists"
+                    break;
+                case 2:
+                    response.err_code = 6;
+                    response.msg_response = "Error creating directory"
+                    break;
+            }
+            ((ServerPI *)rq)->SendResponse(response);
+        }
     }
 };
 
