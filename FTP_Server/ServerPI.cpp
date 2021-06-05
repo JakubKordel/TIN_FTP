@@ -51,6 +51,7 @@ Command* ServerPI::nextCommand() {
       close(msgsocket);
       std::cout << "Server got empty request, exiting";
       exit(0);
+      exitHandler = false;
     }
 
     std::string comm_name = getFirstWord(req);
@@ -75,16 +76,17 @@ void ServerPI::handleNoCommandFault() {
     std::cin >> stop;
     std::cout << "Handle no command fault\n";
     std::string msg = "Unknown command";
-
 }
 
 std::string ServerPI::getData(){
     int datasock = 0;
-    int port;
+    short port;
     std::string data;
 
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
     port = bindServerDTP(datasock);
+
+    port = ntohs(port);
 
     if(port>0){
         SendDTPPort(port);
@@ -116,14 +118,19 @@ void ServerPI::sendData(const std::string& data) {
 
 int ServerPI::SendDTPPort(int port){
     Response resp;
-    resp.status_code = "xxx";
-    resp.msg_response = " DTP_port 22 \nPlease connect to DTP_port";
-
+    if(curr_operation==UPLOAD_OP) resp.status_code = "110";
+    else if(curr_operation==DOWNLOAD_OP) resp.status_code = "111";
+    resp.msg_response = "Please connect to this port:";
     SendResponse(resp);
+
+    if(curr_operation==UPLOAD_OP) resp.status_code = "530";
+    else if(curr_operation==DOWNLOAD_OP) resp.status_code = "531";
+    resp.msg_response = std::to_string(port);
+
     return 0;
 }
 
-int ServerPI::bindServerDTP(int sock){
+short ServerPI::bindServerDTP(int sock){
     struct sockaddr_in server;
 
     server.sin_family = AF_INET;

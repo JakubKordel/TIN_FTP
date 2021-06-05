@@ -18,5 +18,5 @@ public:
     bool addToDBNewRecord(std::string filename, std::string content);
 
 private:
-    std::string DB_PATH = "./FTP_Server/Database/file_db.csv";
+    std::string DB_PATH = "ftp_root/file_db.csv";
 };

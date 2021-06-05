@@ -107,7 +107,6 @@ public:
           login = args[1];
           password = ((ServerPI*)rq)->WaitForRequest();
         }
-
         else if (args.size() == 3) {
           login = args[1];
           password = args[2];
@@ -115,9 +114,15 @@ public:
 
         AuthenticationDB auth;
         bool issuccess = auth.login(login, password);
-        if( issuccess ){
-            response.status_code = "530";
+        if( !rq->IsLogged() && issuccess ){
+            rq->SetLogged();
+            rq->SetUsername(login);
+            std::string root_path = rq->GetRootPath();
+            rq->SetRootPath(root_path.append(login));
+            rq->SetCurrPath(root_path);
+            response.status_code = "230";
             response.msg_response = " OK, you have been logged in";
+            std::cout << rq->GetUsername() << ": logged: " <<rq->IsLogged() << ": current_path : " << rq->GetCurrPath() << "\n";
         }else{
             response.status_code = "530";
             response.msg_response = " Login error, wrong username or password";
@@ -125,7 +130,7 @@ public:
 
         // send response to client
         ((ServerPI*)rq)->SendResponse(response);
-        std::cout << std::endl << "I HANDLED LOGIN COMMAND" << std::endl;
+        std::cout << std::endl << "I LOGGIN COMMAND FINISHED" << std::endl;
     }
 };
 
@@ -158,7 +163,7 @@ public:
         }
 
         ((ServerPI *)rq)->SendResponse(response);
-        std::cout << std::endl << "I AM HANDLING LOGOUT COMMAND" << std::endl;
+        std::cout << std::endl << "LOGOUT COMMAND FINISHED" << std::endl;
     }
 };
 
@@ -184,7 +189,7 @@ public:
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
             ChecksumDB db;
-            std::string data = rq->getData();
+            std::string data = ((ServerPI*)rq)->getData();
             // ServerPI got from the ServerDTP data to save on disc
 
             if (db.fileExists(args.at(1), data)) {
@@ -312,9 +317,12 @@ public:
 
     void handle() {
         Response response;
-        if (rq->IsLogged()) {
+
+        // std::cout << "folder: " << args.at(1) << "\nlength:" << args.at(1).length() << "\n";
+
+        if (!rq->IsLogged()) {
             response.status_code = "531"; // u are LOGGED_OUT
-            response.msg_response = "Error creating directory, you have to be logged in to create directories";
+            response.msg_response = "Error changing directory, you have to be logged in to change dir";
         }
         else {
             std::string result = "";
@@ -325,18 +333,18 @@ public:
                 response.status_code = "200";
                 response.msg_response = "OK, directory changed successfully";
                 break;
-            case -1:
+            case 1:// 
                 response.status_code = "554";
-                response.msg_response = "Error changing directory, tried changing directory to above root";
+                response.msg_response = "Error changing directory, this directory isn't available";
                 break;
-            case -2:
+            case 2:
                 response.status_code = "553";
                 response.msg_response = "Error changing directory, directory not found";
                 break;
             }
         }
         ((ServerPI*)rq)->SendResponse(response);
-        std::cout << std::endl << "I AM CHANGING CURRENT DIRECTORY ON THE SERVER" << std::endl;
+        std::cout << std::endl << "CHANGE DIR COMMAND FINISHED\n" << std::endl;
     }
 };
 
@@ -354,32 +362,32 @@ public:
 
     void handle(){
         Response response;
+        std::string result;
+        if(!rq->IsLogged()){
+            response.status_code = "531"; // u are LOGGED_OUT
+            response.msg_response = "Error listing files and dirs, you have to be logged in to list files and dirs";
+        }else{
+            std::cout << rq->GetCurrPath();
+            int issuccess = FileSystem::List(result, rq->GetCurrPath());
+            switch(issuccess){
+                case 0:
+                    response.status_code = "200";
+                    response.msg_response.append(result);
+                    break;
+                case 1:
+                    response.status_code = "553";
+                    response.msg_response = "Error wrong path";// 
+                    break;
+                case 2:
+                    response.status_code = "451";
+                    response.msg_response = "Server filesystem error, try again in few minutes";
+                    break;
 
-        if (rq->IsLogged()) {
-            response.status_code = "531"; //u are LOGGED_OUT
-            response.msg_response = "Error listing files, you have to be logged in to list files";
-        }
-        else {
-            std::string list = "";
-            int code = FileSystem::List(list, rq->GetCurrPath());
-            // code=0 if file read without problems
-            // code=-1 if file does not exist, code=-2 if other exception while opening file,
-            // code=-3 if some characters couldn't be read, code=-4 if other exception while reading file
-            if (code == 0) {
-                // read OK
-                ((ServerPI*)rq)->sendData(list);
-                response.status_code = "200";
-                response.msg_response = "OK, the list has been sent to you";
             }
-            else if (code == -1) {
-                // problem while opening file
-                response.status_code = "553";
-                response.msg_response = "Error listing";
-            }
+            
         }
         ((ServerPI*)rq)->SendResponse(response);
-
-        std::cout << std::endl << "I AM LISTING FILES IN THE CURRENT PATH" << std::endl;
+        std::cout << std::endl << "LIST COMMAND FINISHED" << std::endl;
     }
 };
 

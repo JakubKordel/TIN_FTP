@@ -1,4 +1,3 @@
-
 #include "../NetFunctions/NetFunctions.h"
 
 #include "UserPI.h"
@@ -12,6 +11,9 @@
         //instead of exit throw some exception
     }
   }
+
+
+  // UserPI::UserPI(UserPI upi);
 
   int UserPI::connectToServer(std::string serverName, int serverPort){
 
@@ -40,7 +42,7 @@
 
 
   int UserPI::sendMsgToServer(std::string msg){
-    if (open = true){
+    if (open){
       return SendMsg(sock, msg);
     } else {
       return -1;

@@ -3,6 +3,7 @@
 #include <string>
 #include <exception>
 #include <vector>
+#include <iostream>
 
 #include "ClientState.h"
 
@@ -18,9 +19,8 @@ class RequestHandler: public ClientState {
 
 protected:
     const std::string root_path = "~/Student/semestr_6/TIN/Projekt/Program/TIN_FTP";
-
-private:
     bool exitHandler = false;
+
 
     int err = 0;
 
@@ -29,8 +29,8 @@ public:
     virtual Command * nextCommand() = 0;
     virtual void returnResponse(struct Response resp) = 0;
 
-    virtual std::string getData() = 0;
-    virtual void sendData(const std::string& data) = 0;
+// <<<<<<< HEAD
+    // virtual void sendData(const std::string& data) = 0;
 
 protected:
     virtual void handleNoCommandFault() = 0;

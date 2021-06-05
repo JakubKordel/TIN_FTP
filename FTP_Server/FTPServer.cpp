@@ -56,8 +56,9 @@ int FTPServer::Start(){
 }
 
 void FTPServer::WriteOut(){
-    std::cout << "ip: " << ip_addr << std::endl;
-    std::cout << "port: " << port << std::endl;
+    // std::cout << "ip port" << ip_addr << std::endl;
+    // std::cout << "port: " << port << std::endl;
+    std::cout << "ip port\n" << ip_addr << " " << port << "\n";
 }
 
 int FTPServer::BindSock(int sock){

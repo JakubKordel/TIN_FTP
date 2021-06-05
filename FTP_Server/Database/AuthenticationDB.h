@@ -11,7 +11,7 @@
 
 class AuthenticationDB: Database{
     bool opened = false;
-    const std::string DB_PATH = "FTP_Server/Database/login_db.csv";
+    const std::string DB_PATH = "ftp_root/login_db.csv";
     
 public:
     AuthenticationDB(): Database(){

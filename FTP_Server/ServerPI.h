@@ -24,21 +24,25 @@ public:
     void PrintHelp();
     int SendResponse(Response resp);
     std::string WaitForRequest();
-    std::string getData() override;
-    void sendData(const std::string& data) override;
+
+    void sendData(const std::string& data);
+    std::string getData();
 
 private:
     int SendDTPPort(int port);
     void *ServeClient(void* arg);
     void Greeting();
-    int bindServerDTP(int sock);
+    short bindServerDTP(int sock);
 
     void handleNoCommandFault() override;
     Command *nextCommand() override;
     void returnResponse(Response resp) override;
 
     const std::string welcome_msg = "Welcome to FTP Server 1.0\nSend \"help\" to get information how to use server";
-    const int DTP_PORT = 22;
+    // const int DTP_PORT = 22;
+    const int UPLOAD_OP = 2;
+    const int DOWNLOAD_OP = 3;
+    
 };
 
 

@@ -12,7 +12,10 @@ void UserInterface::handleNoCommandFault(){
 }
 
 Command * UserInterface::getCommand(std::string str){
+
+
   std::string commandName = getFirstWord(str);
+  std::cout << str << "\n";
   Command * command = nullptr;
 
   if (commandName == "exit") command = new ExitCommand(this) ; else

@@ -5,11 +5,11 @@
 
 class ClientState{
 public:
-    std::string root_path = "~/Student/semestr_6/TIN/Projekt/Program/TIN_FTP";
+    std::string root_path = "ftp_root/";
     std::string curr_path;
     std::string username;
     bool logged = false;
-    int curr_operation = 0;
+    int curr_operation = 0;// it is unused
 
     const std::string GetRootPath(){ return root_path; }
     const std::string GetCurrPath(){ return curr_path; }
