@@ -52,7 +52,7 @@ public:
 	}
 
   void handleCommand(){
-      if (args[1] == "--help")
+      if (args.size() >= 2 && args[1] == "--help")
       printHelp();
         else
       handle();
