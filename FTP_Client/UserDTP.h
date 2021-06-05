@@ -15,12 +15,34 @@
 #include <iostream>
 #include <string>
 
-
-#include "../NetFunctions/NetFunctions.h"
-
 class UserDTP{
+  
+  int sock;
+  struct sockaddr_in server;
+  struct hostent *hp;
 
+  bool open;
 
+  int operation;
+
+  public:
+
+  UserDTP();
+
+  ~UserDTP();
+
+  int connectToServerDTPPort(std::string serverName, int serverPort);
+
+  void closeConnection();
+
+  std::string run(int op, std::string data);
+
+  bool isOpen();
+
+  const int DWNLOAD = 3;
+  const int UPLOAD = 2;
+
+  const int PREFERRED_BUF_SIZE = 400;
 
 };
 

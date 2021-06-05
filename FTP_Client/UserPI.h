@@ -19,6 +19,7 @@ class UserPI {
   int sock;
   struct sockaddr_in server;
   struct hostent *hp;
+  std::string servName;
 
   bool open;
 
@@ -26,15 +27,19 @@ class UserPI {
 
   UserPI();
 
+  ~UserPI();
+
   int connectToServer(std::string serverName, int serverPort);
 
   void closeConnection();
-
 
   int sendMsgToServer(std::string msg);
 
   std::string waitForServerResponse();
 
+  bool isOpen();
+
+  std::string getServerName();
 
 };
 

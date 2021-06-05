@@ -7,6 +7,8 @@
 #include "CommandHandler.h"
 #include "helpStringsOperations.h"
 #include "../UserPI.h"
+#include "../UserDTP.h"
+#include "../Filesystem/FileSystem.h"
 
 class StringShapeCommand : public Command {
 private:
@@ -62,7 +64,7 @@ public:
 };
 
 class ConnectCommand : public StringShapeCommand {
-  UserPI upi;
+  UserPI & upi;
 public:
 	ConnectCommand(std::string string, UserPI & userPI) : StringShapeCommand(string), upi(userPI) {
 			argumentsMinimum = 3;
@@ -105,7 +107,7 @@ public:
       } else if (response[0] == '2') {
         commandHandlingFinished = true;
       } else if (response[0] == '3'){
-        std::cin >> msg;
+        getline(std::cin, msg) ;
         upi.sendMsgToServer(msg);
       } else if (response[0] == '4'){
           commandHandlingFinished = true;
@@ -113,8 +115,21 @@ public:
           commandHandlingFinished = true;
       }
     }
-
 	}
+
+  bool isCorrect(){
+    return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+  }
+
+  void handleFaultyCommand(){
+    if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+      std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+      printHelp();
+    }
+    else if (!upi.isOpen()){
+      std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
+    }
+  }
 };
 
 class LogoutCommand : public StringShapeCommand {
@@ -140,7 +155,7 @@ public:
       } else if (response[0] == '2') {
         commandHandlingFinished = true;
       } else if (response[0] == '3'){
-        std::cin >> msg;
+        getline(std::cin, msg) ;
         upi.sendMsgToServer(msg);
       } else if (response[0] == '4'){
           commandHandlingFinished = true;
@@ -149,6 +164,20 @@ public:
       }
     }
 	}
+
+  bool isCorrect(){
+    return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+  }
+
+  void handleFaultyCommand(){
+    if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+      std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+      printHelp();
+    }
+    else if (!upi.isOpen()){
+      std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
+    }
+  }
 };
 
   class UploadCommand : public StringShapeCommand {
@@ -175,16 +204,42 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
-          upi.sendMsgToServer(msg);
+          if (response[1] == '5' && response[2] == '0' ) {
+            UserDTP userDTP;
+            int serverPort = 0;
+            //get Server Port from response
+            std::string file;
+            FileSystem::GetFile(file, args[1]);
+            userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
+            userDTP.run(2, file);
+            userDTP.closeConnection();
+          }
+          else {
+            getline(std::cin, msg) ;
+            upi.sendMsgToServer(msg);
+          }
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
         } else if (response[0] == '5'){
             commandHandlingFinished = true;
         }
       }
-
   	}
+
+    bool isCorrect(){
+      return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+    }
+
+    void handleFaultyCommand(){
+      if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+      }
+      else if (!upi.isOpen()){
+        std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
+      }
+    }
+
   };
 
   class DownloadCommand : public StringShapeCommand {
@@ -211,17 +266,41 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
-          upi.sendMsgToServer(msg);
+          if (response[1] == '5' && response[2] == '1' ) {
+            UserDTP userDTP;
+            int serverPort = 0;
+            //get Server Port from response
+            userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
+            std::string file = userDTP.run(3, "");
+            FileSystem::SaveFile("", file);
+            userDTP.closeConnection();
+          }
+          else {
+            getline(std::cin, msg) ;
+            upi.sendMsgToServer(msg);
+          }
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
         } else if (response[0] == '5'){
             commandHandlingFinished = true;
         }
       }
-
-
     }
+
+    bool isCorrect(){
+      return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+    }
+
+    void handleFaultyCommand(){
+      if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+      }
+      else if (!upi.isOpen()){
+        std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
+      }
+    }
+
   };
 
   class MkdirCommand : public StringShapeCommand {
@@ -248,7 +327,7 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg) ;
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
@@ -256,7 +335,20 @@ public:
             commandHandlingFinished = true;
         }
       }
+    }
 
+    bool isCorrect(){
+      return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+    }
+
+    void handleFaultyCommand(){
+      if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+      }
+      else if (!upi.isOpen()){
+        std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
+      }
     }
   };
 
@@ -284,13 +376,27 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg) ;
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
         } else if (response[0] == '5'){
             commandHandlingFinished = true;
         }
+      }
+    }
+
+    bool isCorrect(){
+      return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+    }
+
+    void handleFaultyCommand(){
+      if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+      }
+      else if (!upi.isOpen()){
+        std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
       }
     }
   };
@@ -318,13 +424,27 @@ public:
         } else if (response[0] == '2') {
           commandHandlingFinished = true;
         } else if (response[0] == '3'){
-          std::cin >> msg;
+          getline(std::cin, msg) ;
           upi.sendMsgToServer(msg);
         } else if (response[0] == '4'){
             commandHandlingFinished = true;
         } else if (response[0] == '5'){
             commandHandlingFinished = true;
         }
+      }
+    }
+
+    bool isCorrect(){
+      return ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum)) && upi.isOpen();
+    }
+
+    void handleFaultyCommand(){
+      if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
+        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        printHelp();
+      }
+      else if (!upi.isOpen()){
+        std::cout << std::endl << "ERROR: You have to connect to server first" << std::endl;
       }
     }
   };

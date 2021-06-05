@@ -3,7 +3,7 @@
 
 std::string ServerDTP::Run(){
     std::string result;
-    if(operation != DWNLOAD && operation != UPLOAD) {result = "Bad operation"; return result; } 
+    if(operation != DWNLOAD && operation != UPLOAD) {result = "Bad operation"; return result; }
 
     struct sockaddr_in client;
     int datasock;

@@ -14,6 +14,9 @@
   }
 
   int UserPI::connectToServer(std::string serverName, int serverPort){
+
+    servName = serverName;
+
     server.sin_family = AF_INET;
     hp = gethostbyname(serverName.c_str());
     if(hp == (struct hostent *) 0) {
@@ -48,4 +51,18 @@
     std::string response;
     ReceiveMsg(sock, response);
     return response;
+  }
+
+  bool UserPI::isOpen(){
+    return open;
+  }
+
+  UserPI::~UserPI(){
+    if (isOpen()){
+      closeConnection();
+    }
+  }
+
+  std::string UserPI::getServerName(){
+    return servName;
   }

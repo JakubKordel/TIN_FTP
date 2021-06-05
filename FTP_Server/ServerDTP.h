@@ -24,11 +24,11 @@ public:
     std::string Run();
 
     const int DWNLOAD = 3;
-    const int UPLOAD = 2;   
+    const int UPLOAD = 2;
 
 private:
     bool VerifyClient(sockaddr_in client);
-    
+
     const int PREFERRED_BUF_SIZE = 400;
 
 };

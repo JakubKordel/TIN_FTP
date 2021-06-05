@@ -11,12 +11,10 @@ void RequestHandler::Run(){
                 // command is correct
                 command->handleCommand();
             } else {
-                // command is wrong - i. e too many or too less arguments 
+                // command is wrong - i. e too many or too less arguments
                 command->handleFaultyCommand();
             }
             delete(command);
-            
-            exit = 1;
         }
     }
 }
