@@ -184,7 +184,7 @@ public:
         Response response;
         std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
 
-        if( rq->IsLogged() ){
+        if( !rq->IsLogged() ){
             response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
         }else{
@@ -226,7 +226,7 @@ public:
     void handle(){
         Response response;
 
-        if (rq->IsLogged()) {
+        if (!rq->IsLogged()) {
             response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error downloading, you have to be logged in to download files";
         }
@@ -278,7 +278,7 @@ public:
 
     void handle() {
         Response response;
-        if (rq->IsLogged()) {
+        if (!rq->IsLogged()) {
             response.status_code = "531"; // u are LOGGED_OUT
             response.msg_response = "Error creating directory, you have to be logged in to create directories";
         } else {
@@ -333,7 +333,7 @@ public:
                 response.status_code = "200";
                 response.msg_response = "OK, directory changed successfully";
                 break;
-            case 1:// 
+            case 1://
                 response.status_code = "554";
                 response.msg_response = "Error changing directory, this directory isn't available";
                 break;
@@ -376,7 +376,7 @@ public:
                     break;
                 case 1:
                     response.status_code = "553";
-                    response.msg_response = "Error wrong path";// 
+                    response.msg_response = "Error wrong path";//
                     break;
                 case 2:
                     response.status_code = "451";
@@ -384,7 +384,7 @@ public:
                     break;
 
             }
-            
+
         }
         ((ServerPI*)rq)->SendResponse(response);
         std::cout << std::endl << "LIST COMMAND FINISHED" << std::endl;

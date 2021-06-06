@@ -37,12 +37,17 @@ int FileSystem::SaveFile(std::string full_path, std::string file_content){
 
 int FileSystem::List(std::string &result, std::string curr_path){
     result.clear();
+    if( curr_path.at(curr_path.length()-1) !='/' ){
+        curr_path.push_back('/');
+    }
+
+    std::cout << curr_path << "\n";
 
     if(curr_path.at(curr_path.length()-1) != '/') curr_path.push_back('/');
 
-    if(!VerifyPath(curr_path)){
+    if(!pathRelExists(curr_path)){
         // error - wrong path
-        return -1;
+        return 1;
     }
 
     try{
@@ -51,21 +56,27 @@ int FileSystem::List(std::string &result, std::string curr_path){
             result.append(fs_obj.replace(fs_obj.find_first_of(curr_path), curr_path.length(), "")).push_back('\n');
         }
     }catch(std::exception &e){
-        return -1; // list error
+        return 2; // list error
     }
     
-
-
     return 0;
 }
 
-// you can 
+/* return
+ * 0 - success
+ * 1 - directory unavailable
+ * 2 - directory not found
+*/
 int FileSystem::ChangeDirectory(std::string &result, std::string root_path, std::string curr_path, std::string dir){
+
+    std::cout << "root_path\t" << root_path <<"\n";
+    std::cout << "curr_path\t" << curr_path <<"\n";
+    std::cout << "dir\t" << dir <<"\n";
+
     result.clear();
     if(dir.at(dir.length()-1) != '/') dir.push_back('/');
 
     std::string ncurr_path = curr_path;
-
 
     std::string single_dir = "";
     size_t idx_s = 0, idx_e = 0;
@@ -74,12 +85,8 @@ int FileSystem::ChangeDirectory(std::string &result, std::string root_path, std:
         single_dir.clear();
         if( idx_e != std::string::npos ){
             single_dir.append(dir.substr(idx_s, idx_e-idx_s+1));
-
-            // std::cout << single_dir <<"\n";
-
             if( !single_dir.compare("../")){
                 size_t last_bs = ncurr_path.find_last_of('/', ncurr_path.length()-2) +1;
-                // std::cout << "last_bs: " << last_bs << "\tlength: " << ncurr_path.length() << "\n";
                 ncurr_path.erase(last_bs, ncurr_path.length() - last_bs );
             }
             idx_s = idx_e + 1;
@@ -87,41 +94,38 @@ int FileSystem::ChangeDirectory(std::string &result, std::string root_path, std:
 
     }while(idx_e != std::string::npos && idx_s < dir.length() && !single_dir.compare("../"));
 
+    
+    std::cout << ncurr_path << "\n";
 
-    std::string bw_dir = "../";
-
-
-    size_t first_not_bw_dir = dir.rfind(bw_dir)+bw_dir.length();
-
-
-    // if(first_not_bw_dir != std::string::npos){
-    //     std::cout << first_not_bw_dir <<"\n";
-    // }
-
-    if(first_not_bw_dir >= dir.length()){
-        result.append(ncurr_path);
-        // if there were only backward dirs then we have finished 
-        return 0;
-    }
-
-    ncurr_path.append(dir.substr(first_not_bw_dir, dir.length() - first_not_bw_dir));
-
-    std::string dirname = dir.substr(first_not_bw_dir, dir.length()-first_not_bw_dir);
-    std::cout << dirname << "\n";
-
-    // ncurr_path.append(dirname)
-
-    // std::cout << ncurr_path << "\n";
 
     if( IsAboveRoot(root_path, ncurr_path) ){
         // if new current path is above the root_path (in files tree), it is an error
-        return -1;
+        return 1;
     }
 
-    if( !VerifyPath(ncurr_path) ){
-        std::cout << ncurr_path << "\n";
+    std::string bw_dir = "../";
+    size_t first_not_bw_dir = dir.rfind(bw_dir);
+    if(first_not_bw_dir != std::string::npos ){
+        first_not_bw_dir += bw_dir.length();
+    }
+    
+    if( first_not_bw_dir!=std::string::npos && first_not_bw_dir >= dir.length()){
+        // result.append(ncurr_path);
+        // if there were only backward dirs then we have finished 
+    }else if(first_not_bw_dir == std::string::npos ){
+        if(ncurr_path.at(ncurr_path.size()-1)!='/' && dir.at(0)!='/') ncurr_path.push_back('/');
+        ncurr_path.append(dir);
+        // result.append(ncurr_path);
+    }else{
+        std::string ndir = dir.substr(first_not_bw_dir, dir.length() - first_not_bw_dir);
+        if(ncurr_path.at(ncurr_path.size()-1)!='/' && ndir.at(0)!='/') ncurr_path.push_back('/');
+        ncurr_path.append(ndir);
+    }
+
+    if( !pathRelExists(ncurr_path) ){
         // error directory not found
-        return -2;
+        std::cout << ncurr_path << "\n";
+        return 2;
     }
 
     result.append(ncurr_path);
@@ -173,25 +177,42 @@ int FileSystem::GetFile(std::string &result, std::string path){
     return 0;
 }
 
+/* return:
+ * 0 - success
+ * 1 - wrong path
+ * 2 - directory already exists
+ * 3 - server error
+*/
 int FileSystem::MakeDir(std::string curr_path, std::string dir_name){
     if(curr_path.at(curr_path.length()-1) != '/'){
         curr_path.push_back('/');
     }
 
+    if(!VerifyPath(curr_path)){ return 1; }
     std::string full_path = curr_path.append(dir_name);
-    if(VerifyPath(full_path)){ return 1; }
+    if(VerifyPath(full_path)){ return 2; }
     if(!fs::create_directory(full_path)){
-        return 2; // directory is not created
+        return 3; // directory is not created
     }
     return 0;
 }
 
+bool FileSystem::pathRelExists(std::string path){
+    std::string full_path = fs::current_path();
+    if(full_path.at(full_path.size()-1)!='/') full_path.push_back('/');
+    full_path.append(path);
+    std::cout << full_path << "\t full_path\n";
+    return fs::exists(full_path);
+}
 
 bool FileSystem::VerifyPath(std::string path){
-    return fs::exists(path);
+    // std::string full_path = fs::current_path();
+    return fs::exists(path);// || full_path.find(path) == full_path.length()-path.length();
 }
 
 bool FileSystem::IsAboveRoot(std::string root_path, std::string curr_path){
+    if(curr_path.empty() && !root_path.empty()) return true;
+    if(curr_path.at(0)!='/') curr_path.insert(curr_path.begin(), '/');
     if(curr_path.find(root_path)==std::string::npos) return true;
     return false;
 }

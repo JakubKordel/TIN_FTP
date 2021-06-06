@@ -6,6 +6,7 @@
 #include <fstream>
 #include "CommandHandler.h"
 #include "helpStringsOperations.h"
+#include <arpa/inet.h>
 #include "../UserPI.h"
 #include "../UserDTP.h"
 #include "../Filesystem/FileSystem.h"
@@ -191,7 +192,7 @@ public:
   			argumentsMinimum = 2;
   			argumentsMaximum = 2;
   			commandDescription = "Uploads file to the server";
-  			argsNames.push_back("upload");
+  			argsNames.push_back("put");
         argsNames.push_back("file");
   	}
 
@@ -210,10 +211,11 @@ public:
         } else if (response[0] == '3'){
           if (response[1] == '5' && response[2] == '0' ) {
             UserDTP userDTP;
-            int serverPort = 0;
-            //get Server Port from response
             std::string file;
             FileSystem::GetFile(file, args[1]);
+            std::string::size_type sz;
+            int serverPort = std::stoi(response.substr(3,10), &sz);
+            serverPort = htons(serverPort);
             userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
             userDTP.run(2, file);
             userDTP.closeConnection();
@@ -253,7 +255,7 @@ public:
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Downloads file from the server";
-        argsNames.push_back("download");
+        argsNames.push_back("get");
         argsNames.push_back("file");
     }
 
@@ -272,8 +274,9 @@ public:
         } else if (response[0] == '3'){
           if (response[1] == '5' && response[2] == '1' ) {
             UserDTP userDTP;
-            int serverPort = 0;
-            //get Server Port from response
+            std::string::size_type sz;
+            int serverPort = std::stoi(response.substr(4,10), &sz);
+            serverPort = htons(serverPort);
             userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
             std::string file = userDTP.run(3, "");
             FileSystem::SaveFile("", file);
@@ -314,7 +317,7 @@ public:
         argumentsMinimum = 2;
         argumentsMaximum = 2;
         commandDescription = "Creates new directory in current directory";
-        argsNames.push_back("mkdir");
+        argsNames.push_back("mkd");
         argsNames.push_back("directoryname");
     }
 

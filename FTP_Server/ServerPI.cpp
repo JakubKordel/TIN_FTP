@@ -106,6 +106,8 @@ void ServerPI::sendData(const std::string& data) {
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
     port = bindServerDTP(datasock);
 
+    port = ntohs(port);
+
     if (port > 0) {
         SendDTPPort(port);
         ServerDTP dtp = ServerDTP(datasock, curr_operation, client_addr, data);
@@ -122,10 +124,13 @@ int ServerPI::SendDTPPort(int port){
     else if(curr_operation==DOWNLOAD_OP) resp.status_code = "111";
     resp.msg_response = "Please connect to this port:";
     SendResponse(resp);
-
-    if(curr_operation==UPLOAD_OP) resp.status_code = "530";
-    else if(curr_operation==DOWNLOAD_OP) resp.status_code = "531";
-    resp.msg_response = std::to_string(port);
+    Response resp2;
+    if(curr_operation==UPLOAD_OP) resp2.status_code = "350";
+    else if(curr_operation==DOWNLOAD_OP) resp2.status_code = "351";
+    resp2.msg_response = std::to_string(port);
+    std::cout << port << " port" << std::endl;
+    std::cout << "tutaj jestem";
+    SendResponse(resp2);
 
     return 0;
 }
