@@ -156,6 +156,7 @@ public:
         }else{
             rq->ResetLogged();
             rq->SetUsername("");
+            rq->SetCurrPath("");
             response.status_code = "231";
             response.msg_response = "OK, you have been logged out";
 
@@ -191,20 +192,20 @@ public:
             std::string data = ((ServerPI*)rq)->getData();
             // ServerPI got from the ServerDTP data to save on disc
 
-            if (db.fileExists(args.at(1), data)) {
-                response.status_code = "552"; // this file exists in database
-                response.msg_response = "Error uploading, file with this name or content already exists";
-            }
-            else {
-                db.addToDB(args.at(1), data); // adding new record to database
+            // if (db.fileExists(args.at(1), data)) {
+            //     response.status_code = "552"; // this file exists in database
+            //     response.msg_response = "Error uploading, file with this name or content already exists";
+            // }
+            // else {
+            //     db.addToDB(args.at(1), data); // adding new record to database
 
-                std::string full_path = rq->GetCurrPath();
-                full_path.append(args.at(1));// concat current path and the filename
-                FileSystem::SaveFile(full_path, data); // saving the file
+            //     std::string full_path = rq->GetCurrPath();
+            //     full_path.append(args.at(1));// concat current path and the filename
+            //     FileSystem::SaveFile(full_path, data); // saving the file
 
-                response.status_code = "200"; //u are LOGGED_OUT
-                response.msg_response = "OK, your file has been uploaded";
-            }
+            //     response.status_code = "200"; //u are LOGGED_OUT
+            //     response.msg_response = "OK, your file has been uploaded";
+            // }
         }
         ((ServerPI*)rq)->SendResponse(response);
     }
