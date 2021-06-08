@@ -36,7 +36,6 @@ private:
 
     void handleNoCommandFault() override;
     Command *nextCommand() override;
-    void returnResponse(Response resp) override;
 
     const std::string welcome_msg = "Welcome to FTP Server 1.0\nSend \"help\" to get information how to use server";
     // const int DTP_PORT = 22;

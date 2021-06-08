@@ -23,8 +23,8 @@ protected:
   std::string command;
   std::vector<std::string> args;
 
-  int argumentsMinimum;
-  int argumentsMaximum;
+  unsigned int argumentsMinimum;
+  unsigned int argumentsMaximum;
   std::string commandDescription;
   std::vector<std::string> argsNames;
 
@@ -40,7 +40,7 @@ public:
     std::vector<std::string>::iterator it = argsNames.begin();
     std::cout << "Usage: " << *it;
     ++it;
-    for (it ; it != argsNames.end(); ++it)
+    for ( ; it != argsNames.end(); ++it)
         std::cout << " [ " << *it << " ] ";
     std::cout << std::endl << commandDescription << std::endl;
   }
@@ -78,9 +78,49 @@ public:
 
 	void handle(){
 		//std::cout << std::endl << "I AM HANDLING CONNECT COMMAND" << std::endl;
-
     upi.connectToServer(args[1], atoi(args[2].c_str()));
+    std::string welcome_msg = upi.waitForServerResponse();
+    std::cout << welcome_msg << "\n";
+  }
+
+  void handleFaultyCommand(){
+		std::cout << std::endl << "ERROR: you have to close current connection" << std::endl;
+		printHelp();
 	}
+  
+  bool isCorrect(){
+		return !upi.isOpen() && ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum));
+	}
+
+};
+
+class DisconnectCommand : public StringShapeCommand {
+  UserPI & upi;
+public:
+  DisconnectCommand(std::string string, UserPI & userPI) : StringShapeCommand(string), upi(userPI) {
+			argumentsMinimum = 1;
+			argumentsMaximum = 1;
+			commandDescription = "Close connection with server";
+      argsNames.push_back("close");
+	}
+
+  void handle(){
+    upi.closeConnection();
+  }
+
+  void handleFaultyCommand(){
+    if(!upi.isOpen()){
+      std::cout << "ERROR: you have to be connected to close connection";
+    }else{
+      std::cout << "ERROR: Bad arguments";
+      printHelp();
+    }
+  }
+
+  bool isCorrect(){
+    return upi.isOpen() && ((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum));
+  }
+
 };
 
 class LoginCommand : public StringShapeCommand {

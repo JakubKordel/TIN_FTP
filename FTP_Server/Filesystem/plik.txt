@@ -1,0 +1,2 @@
+To jest krotki tekst. Sprobuje zapisac go do pliku za pomoca biblioteki FileSystem
+Let's go

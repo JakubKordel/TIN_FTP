@@ -5,16 +5,24 @@
 
 
 int FileSystem::SaveFile(std::string full_path, std::string file_content){
-    unsigned int start_filename = full_path.find_last_of(PATH_SEPARATOR);
-    if(start_filename < 0 || start_filename >= full_path.length() - 1 ){
+    std::string filename;
+    std::string dir_path;
+    if( full_path[0] == '/' ) full_path = full_path.substr(1, full_path.length()-1);
+    size_t start_filename = full_path.find_last_of(PATH_SEPARATOR);
+    if( start_filename == full_path.length() - 1 ){
         // error - wrong path or filename
-        return -1;
+        return 1;
     }
-    std::string filename = full_path.substr(start_filename+1);
-    std::string dir_path = full_path.substr(0, start_filename);
-    if(!VerifyPath(dir_path)){
+    if( start_filename == std::string::npos ) {
+        start_filename = 0;
+        dir_path.clear();
+    }else{
+        dir_path = full_path.substr(0, start_filename);
+    }
+    filename = full_path.substr(start_filename+1);
+    if( !dir_path.empty() && !VerifyPath(dir_path)){
         // error directory path doesnt exist
-        return -1;
+        return 2;
     }
 
     std::fstream fd;
@@ -22,13 +30,13 @@ int FileSystem::SaveFile(std::string full_path, std::string file_content){
         fd.open(full_path, std::ios_base::out);
     }catch(std::exception &e){
         // std::cout << e.what;
-        return -1;
+        return 3;
     }
     try{
         fd.write(&file_content[0], file_content.length());
     }catch(std::exception &e){
         //
-        return -1;
+        return 4;
     }
     fd.close();
 
@@ -133,19 +141,20 @@ int FileSystem::ChangeDirectory(std::string &result, std::string root_path, std:
 }
 
 int FileSystem::GetFile(std::string &result, std::string path){
+    if( path[0] == '/' ) path = path.substr(1, path.length()-1 );
     result.clear();
     char *buffer = nullptr;
 
     if(!VerifyPath(path)){
         // error directory path doesnt exist
-        return -1;
+        return 1;
     }
     std::ifstream is;
     try{
         is.open(path, std::ifstream::in);
     }catch(std::exception &e){
         // std::cout << e.what;
-        return -2;
+        return 2;
     }
     try{
         is.seekg(0, is.end);
@@ -161,16 +170,15 @@ int FileSystem::GetFile(std::string &result, std::string path){
         }else{
             // error 
             std::cout << "error: only " << is.gcount() << " could be read\n";
-            return -3;
+            return 3;
         }
 
         result.append(buffer);
-        std::cout << "read " <<result.length() << "bytes\n";
         free(buffer);
 
     }catch(std::exception &e){
         //
-        return -4;
+        return 4;
     }
     is.close();
     

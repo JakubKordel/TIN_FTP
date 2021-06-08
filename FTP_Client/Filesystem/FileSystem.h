@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _FILESYSTEM_
+#define _FILESYSTEM_
 
 #include <string>
 #include <fstream>
@@ -6,14 +7,14 @@
 
 // jesli <filesystem> nieobslugiwany
 
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
+// #include <experimental/filesystem>
+// namespace fs = std::experimental::filesystem;
 
 // * * * * * * * * * * * *
 
 // jesli <filesystem> obslugiwany
-//#include <filesystem>
-//namespace fs = std::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 
 
@@ -32,3 +33,5 @@ private:
     static bool IsAboveRoot(std::string root_path, std::string curr_path);
     static const char PATH_SEPARATOR = '/';
 };
+
+#endif

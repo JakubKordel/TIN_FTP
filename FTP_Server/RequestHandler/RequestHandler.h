@@ -27,10 +27,6 @@ protected:
 public:
     void Run();
     virtual Command * nextCommand() = 0;
-    virtual void returnResponse(struct Response resp) = 0;
-
-// <<<<<<< HEAD
-    // virtual void sendData(const std::string& data) = 0;
 
 protected:
     virtual void handleNoCommandFault() = 0;

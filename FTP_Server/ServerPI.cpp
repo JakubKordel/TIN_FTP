@@ -30,9 +30,7 @@ std::string ServerPI::WaitForRequest(){
 }
 
 void ServerPI::Greeting(){
-    std::cout << "Greeting start\n";
     SendMsg(msgsocket, welcome_msg);
-    std::cout << "Greeting end\n";
 }
 
 int ServerPI::SendResponse(Response resp){
@@ -50,8 +48,8 @@ Command* ServerPI::nextCommand() {
     if (req == ""){
       close(msgsocket);
       std::cout << "Server got empty request, exiting";
-      exit(0);
-      exitHandler = false;
+      exitHandler = true; // it will finish connection with client and will close socket (thread finishes work)
+    //   pthread_exit(0);
     }
 
     std::string comm_name = getFirstWord(req);
@@ -150,10 +148,6 @@ short ServerPI::bindServerDTP(int sock){
     Getsockname( sock, (struct sockaddr *) &server, &length );
 
     return server.sin_port; // return port for DTP connection
-}
-
-void ServerPI::returnResponse(Response resp){
-    SendResponse(resp);
 }
 
 void ServerPI::PrintHelp(){

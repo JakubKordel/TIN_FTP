@@ -1,5 +1,4 @@
-#ifndef _COMMANDS_H
-#define _COMMANDS_H
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -193,7 +192,7 @@ public:
             // ServerPI got from the ServerDTP data to save on disc
 
             if (db.fileExists(args.at(1), data)) {
-                response.status_code = "552"; //u are LOGGED_OUT
+                response.status_code = "552"; // this file exists in database
                 response.msg_response = "Error uploading, file with this name or content already exists";
             }
             else {
@@ -233,26 +232,27 @@ public:
         else {
             std::string data = "";
             std::string full_path = rq->GetCurrPath();
+            if(full_path[full_path.length()-1] != '/' ) full_path.push_back('/');
             full_path.append(args.at(1));// concat current path and the filename
             int code = FileSystem::GetFile(data, full_path);
-            // code=0 if file read without problems
-            // code=-1 if file does not exist, code=-2 if other exception while opening file,
-            // code=-3 if some characters couldn't be read, code=-4 if other exception while reading file
             if (code == 0) {
                 // read OK
                 ((ServerPI*)rq)->sendData(data);
                 response.status_code = "200";
                 response.msg_response = "OK, your file has been downloaded successfully";
+                std::cout << "Operacja powiodla sie\n";
             }
-            else if (code == -1 || code == -2) {
+            else if (code == 1 || code == 2) {
                 // problem while opening file
                 response.status_code = "550";
                 response.msg_response = "Error downloading, your file could not be found";
+                std::cout << "blad 1 lub 2\n";            
             }
-            else if (code == -3 || code == -4) {
+            else if (code == 3 || code == 4) {
                 // problem with reading characters from file
-                response.status_code = "200";
+                response.status_code = "500";
                 response.msg_response = "Error downloading, error while reading file's content";
+                std::cout << "Blad 3 lub 4\n";
             }
         }
         ((ServerPI*)rq)->SendResponse(response);
@@ -335,7 +335,7 @@ public:
                 break;
             case 1://
                 response.status_code = "554";
-                response.msg_response = "Error changing directory, this directory isn't available";
+                response.msg_response = "Error changing directory, you are in root directory";
                 break;
             case 2:
                 response.status_code = "553";
@@ -372,6 +372,7 @@ public:
             switch(issuccess){
                 case 0:
                     response.status_code = "200";
+                    response.msg_response.push_back('\n'); // list files in new line
                     response.msg_response.append(result);
                     break;
                 case 1:
@@ -390,6 +391,3 @@ public:
         std::cout << std::endl << "LIST COMMAND FINISHED" << std::endl;
     }
 };
-
-
-#endif

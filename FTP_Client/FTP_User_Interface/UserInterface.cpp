@@ -27,7 +27,8 @@ Command * UserInterface::getCommand(std::string str){
   if (commandName == "get") command = new DownloadCommand(str, userPI) ; else
   if (commandName == "mkd") command = new MkdirCommand(str, userPI) ; else
   if (commandName == "cd") command = new CdCommand(str, userPI); else
-  if (commandName == "ls") command = new ListCommand(str, userPI);
+  if (commandName == "ls") command = new ListCommand(str, userPI); else
+  if (commandName == "close" ) command = new DisconnectCommand(str, userPI);
   return command;
 }
 
@@ -36,7 +37,7 @@ Command * UserInterface::getCommand(std::string str){
 void UserInterface::printHelp(){
   std::cout << "List of available commands: " << std::endl;
 
-  std::cout << "login \t\t\t logout \t\t put \nget \t\t mkd \t\t\t cd \nls \t\t\t help \t\t\t exit";
+  std::cout << "login \t\t\t logout \t\t put \nget \t\t mkd \t\t\t cd \nls \t\t\t help \t\t\t exit \nclose";
 
   std::cout << "\n\nType"<< std::endl << "[Command Name] --help " << std::endl << "for more information about command";
 }

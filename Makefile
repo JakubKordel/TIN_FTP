@@ -63,15 +63,18 @@ sha1:
 Filesystem: 
 	g++ -c $(CFLAGS) $(FSYSTEM_PATH)/FileSystem.cpp -o obj/FileSystem.o
 	
+A:
+	g++ -c $(CFLAGS)
 
 # jesli <filesystem> obslugiwany
-# mainUI:
-# 	g++ FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserDTP.cpp FTP_Client/UserPI.h FTP_Client/UserPI.cpp FTP_Client/Filesystem/FileSystem.h FTP_Client/Filesystem/FileSystem.cpp -lpthread -o ftp_ui
+
+mainUI:
+	g++ $(CFLAGS) FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserDTP.cpp FTP_Client/UserPI.h FTP_Client/UserPI.cpp FTP_Client/Filesystem/FileSystem.h FTP_Client/Filesystem/FileSystem.cpp -lpthread -o ftp_ui -lstdc++fs
 
 
 # jesli <filesystem> nieobslugiwany
-mainUI:
-	g++ $(CFLAGS) FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserDTP.cpp FTP_Client/UserPI.h FTP_Client/UserPI.cpp FTP_Client/Filesystem/FileSystem.h FTP_Client/Filesystem/FileSystem.cpp -lpthread -o ftp_ui -lstdc++fs
+#mainUI:
+#	g++ $(CFLAGS) FTP_Client/FTP_User_Interface/mainUI.cpp FTP_Client/FTP_User_Interface/CommandHandler.h FTP_Client/FTP_User_Interface/UserInterface.h FTP_Client/FTP_User_Interface/UserInterface.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.cpp FTP_Client/FTP_User_Interface/helpStringsOperations.h FTP_Client/FTP_User_Interface/Commands.h NetFunctions/NetFunctions.h FTP_Client/UserDTP.h FTP_Client/UserDTP.cpp FTP_Client/UserPI.h FTP_Client/UserPI.cpp FTP_Client/Filesystem/FileSystem.h FTP_Client/Filesystem/FileSystem.cpp -lpthread -o ftp_ui -lstdc++fs
 
 
 clean:

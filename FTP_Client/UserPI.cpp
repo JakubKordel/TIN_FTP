@@ -52,6 +52,9 @@
   std::string UserPI::waitForServerResponse(){
     std::string response;
     ReceiveMsg(sock, response);
+    if(response.empty()){
+      std::cout << "Lost ftp server connection\n";
+    }
     return response;
   }
 
