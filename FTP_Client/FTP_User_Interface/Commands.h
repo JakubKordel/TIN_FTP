@@ -50,7 +50,7 @@ public:
 	}
 
 	void handleFaultyCommand(){
-		std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+		std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
 		printHelp();
 	}
 
@@ -72,7 +72,7 @@ public:
 			argumentsMaximum = 3;
 			commandDescription = "Connects user to the server";
       argsNames.push_back("connect");
-			argsNames.push_back("server adress");
+			argsNames.push_back("server address");
       argsNames.push_back("port");
 	}
 
@@ -168,7 +168,7 @@ public:
 
   void handleFaultyCommand(){
     if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-      std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+      std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
       printHelp();
     }
     else if (!upi.isOpen()){
@@ -216,7 +216,7 @@ public:
 
   void handleFaultyCommand(){
     if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-      std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+      std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
       printHelp();
     }
     else if (!upi.isOpen()){
@@ -277,7 +277,7 @@ public:
 
     void handleFaultyCommand(){
       if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
         printHelp();
       }
       else if (!upi.isOpen()){
@@ -319,7 +319,7 @@ public:
             std::cout << resConn << "\n";
             std::string file = userDTP.getData();
             int saveRes = FileSystem::SaveFile(args.at(1), file);
-            if( saveRes != 0) std::cout << "Blad zapisu\n";
+            if( saveRes != 0) std::cout << "Saving error\n";
             userDTP.closeConnection();
           }
           else {
@@ -340,7 +340,7 @@ public:
 
     void handleFaultyCommand(){
       if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
         printHelp();
       }
       else if (!upi.isOpen()){
@@ -390,7 +390,7 @@ public:
 
     void handleFaultyCommand(){
       if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
         printHelp();
       }
       else if (!upi.isOpen()){
@@ -439,7 +439,7 @@ public:
 
     void handleFaultyCommand(){
       if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
         printHelp();
       }
       else if (!upi.isOpen()){
@@ -487,7 +487,7 @@ public:
 
     void handleFaultyCommand(){
       if (!((args.size() >= 2 && args[1] == "--help") || (args.size() >= argumentsMinimum && args.size() <= argumentsMaximum))){
-        std::cout << std::endl << "ERROR: Bad argumets" << std::endl;
+        std::cout << std::endl << "ERROR: Bad arguments" << std::endl;
         printHelp();
       }
       else if (!upi.isOpen()){
