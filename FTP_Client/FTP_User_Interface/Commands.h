@@ -314,12 +314,13 @@ public:
         } else if (response[0] == '3'){
           if (response[1] == '5' && response[2] == '1' ) {
             UserDTP userDTP;
-            std::string::size_type sz;
-            int serverPort = std::stoi(response.substr(4,10), &sz);
-            serverPort = htons(serverPort);
-            userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
+            uint16_t serverPort = static_cast<uint16_t>(std::stoi(response.substr(4)));
+            std::cout << serverPort << "\n";
+            int resConn = userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
+            std::cout << resConn << "\n";
             std::string file = userDTP.run(3, "");
-            FileSystem::SaveFile("", file);
+            int saveRes = FileSystem::SaveFile(args.at(1), file);
+            if( saveRes != 0) std::cout << "Blad zapisu\n";
             userDTP.closeConnection();
           }
           else {

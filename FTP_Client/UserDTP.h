@@ -31,7 +31,7 @@ class UserDTP{
 
   ~UserDTP();
 
-  int connectToServerDTPPort(std::string serverName, int serverPort);
+  int connectToServerDTPPort(std::string serverName, uint16_t serverPort);
 
   void closeConnection();
 
