@@ -5,12 +5,14 @@
 
 class ClientState{
 public:
+    const std::string default_root_path = "ftp_root/";
     std::string root_path = "ftp_root/";
     std::string curr_path;
     std::string username;
     bool logged = false;
     int curr_operation = 0;// it is unused
 
+    const std::string GetDefaultRootPath() { return default_root_path; }
     const std::string GetRootPath(){ return root_path; }
     const std::string GetCurrPath(){ return curr_path; }
     const std::string GetUsername(){ return username; }

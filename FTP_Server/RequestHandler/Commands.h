@@ -156,6 +156,7 @@ public:
         }else{
             rq->ResetLogged();
             rq->SetUsername("");
+            rq->SetRootPath(rq->GetDefaultRootPath());
             rq->SetCurrPath("");
             response.status_code = "231";
             response.msg_response = "OK, you have been logged out";
