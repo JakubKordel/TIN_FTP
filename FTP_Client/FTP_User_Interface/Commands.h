@@ -253,11 +253,10 @@ public:
             UserDTP userDTP;
             std::string file;
             FileSystem::GetFile(file, args[1]);
-            std::string::size_type sz;
-            int serverPort = std::stoi(response.substr(3,10), &sz);
-            serverPort = htons(serverPort);
+            int serverPort = std::stoi(response.substr(4));
             userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
-            userDTP.run(2, file);
+            // userDTP.run(UserDTP:: ,file);
+            userDTP.sendData(file);
             userDTP.closeConnection();
           }
           else {
@@ -318,7 +317,7 @@ public:
             std::cout << serverPort << "\n";
             int resConn = userDTP.connectToServerDTPPort(upi.getServerName(), serverPort);
             std::cout << resConn << "\n";
-            std::string file = userDTP.run(3, "");
+            std::string file = userDTP.getData();
             int saveRes = FileSystem::SaveFile(args.at(1), file);
             if( saveRes != 0) std::cout << "Blad zapisu\n";
             userDTP.closeConnection();

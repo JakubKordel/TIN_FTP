@@ -26,7 +26,7 @@
     memcpy((char *) &server.sin_addr, (char *) hp->h_addr, hp->h_length);
     server.sin_port = htons( serverPort );
 
-    sleep(1);// wait in case server start listening after our connection try
+    sleep(2);// wait in case server start listening after our connection try
     if(connect(sock, (struct sockaddr *) &server, sizeof server ) == -1 ){
         return -2;
     }
@@ -34,22 +34,41 @@
     return 0;
   }
 
-  std::string UserDTP::run(int op, std::string data){
-      std::string result;
-      if (isOpen()){
-        if(operation != DWNLOAD && operation != UPLOAD) {result = "Bad operation"; return result; }
+  // std::string UserDTP::run(int operation, std::string data){
+  //     std::string result;
+  //     if (isOpen()){
+  //       if(operation != DWNLOAD && operation != UPLOAD) {std::cout << "Wywolano to "; result = "Bad operation"; return result; }
 
-        if(operation == DWNLOAD){// we have to recieve data from server
-            ReceiveMsg(sock, result, PREFERRED_BUF_SIZE);
-        }else{ //we have to send data to server
-          SendMsg(sock, data);
-          result = "0";
-        }
-      } else {
+  //       if(operation == DWNLOAD){// we have to recieve data from server
+  //           ReceiveMsg(sock, result, PREFERRED_BUF_SIZE);
+  //           std::cout << result << "\n";
+  //       }else{ //we have to send data to server
+  //         SendMsg(sock, data);
+  //         result = "0";
+  //       }
+  //     } else {
+  //         std::cout << "zamkniete polaczenie\n";
+  //     }
 
-      }
+  //     return result;
+  // }
 
-      return result;
+  std::string UserDTP::getData(){
+    std::string result;
+    if(isOpen()){
+      ReceiveMsg(sock, result, PREFERRED_BUF_SIZE);
+    }else{
+      result = "connection is closed";
+    }
+    return result;
+  }
+
+  void UserDTP::sendData(std::string data){
+    if(isOpen()){
+      SendMsg(sock, data);
+    }else{
+      // ERROR
+    }
   }
 
   void UserDTP::closeConnection(){

@@ -1,6 +1,3 @@
-#ifndef _FILESYSTEM_
-#define _FILESYSTEM_
-
 #include <string>
 #include <fstream>
 #include <exception>
@@ -33,5 +30,3 @@ private:
     static bool IsAboveRoot(std::string root_path, std::string curr_path);
     static const char PATH_SEPARATOR = '/';
 };
-
-#endif

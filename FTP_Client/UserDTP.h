@@ -23,8 +23,6 @@ class UserDTP{
 
   bool open;
 
-  int operation;
-
   public:
 
   UserDTP();
@@ -35,12 +33,16 @@ class UserDTP{
 
   void closeConnection();
 
-  std::string run(int op, std::string data);
+  // std::string run(int operation, std::string data);
+
+  void sendData(std::string data);
+  
+  std::string getData();
 
   bool isOpen();
 
-  const int DWNLOAD = 3;
-  const int UPLOAD = 2;
+  static const int DWNLOAD = 3;
+  static const int UPLOAD = 2;
 
   const int PREFERRED_BUF_SIZE = 400;
 
