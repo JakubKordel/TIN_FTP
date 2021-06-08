@@ -37,7 +37,7 @@ Command * UserInterface::getCommand(std::string str){
 void UserInterface::printHelp(){
   std::cout << "List of available commands: " << std::endl;
 
-  std::cout << "login \t\t\t logout \t\t put \nget \t\t mkd \t\t\t cd \nls \t\t\t help \t\t\t exit \nclose";
+  std::cout << "connect, login, logout, put, get, mkd, cd, ls, help, exit, close";
 
   std::cout << "\n\nType"<< std::endl << "[Command Name] --help " << std::endl << "for more information about command";
 }
