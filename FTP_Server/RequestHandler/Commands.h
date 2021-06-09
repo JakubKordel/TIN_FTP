@@ -117,7 +117,7 @@ public:
             rq->SetLogged();
             rq->SetUsername(login);
             std::string root_path = rq->GetRootPath();
-            rq->SetRootPath(root_path.append(login));
+            rq->SetRootPath(root_path.append(login + "/"));
             rq->SetCurrPath(root_path);
             response.status_code = "230";
             response.msg_response = " OK, you have been logged in";
