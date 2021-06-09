@@ -1,6 +1,0 @@
-login,haslo
-zbigniew.zuch,zuch
-wm,wm
-ckonopcz,ck
-kacpernowak,nowak
-j.kowalski,haslo

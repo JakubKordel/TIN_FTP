@@ -325,7 +325,7 @@ public:
         }
         else {
             std::string result = "";
-            int code = FileSystem::ChangeDirectory(result, rq->GetRootPath(), rq->GetCurrPath(), args.at(1));
+            int code = FileSystem::ChangeDirectory(result, rq->GetRootPathUser(), rq->GetCurrPath(), args.at(1));
             switch (code) {
             case 0:
                 rq->SetCurrPath(result);

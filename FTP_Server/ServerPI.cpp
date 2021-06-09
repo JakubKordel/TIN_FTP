@@ -19,10 +19,8 @@ int ServerPI::Start(){
 
     Run();
     
-    std::cout << "Tuz przed Close()" << client_addr << ":" << client_port << std::endl;
-    
     Close(msgsocket);
-    std::cout << "Tuz za Close() - return()" << client_addr << ":" << client_port << std::endl;
+    std::cout << "Connection with client is closed";
     return 0;
 }
 
