@@ -78,7 +78,7 @@ void ServerPI::handleNoCommandFault() {
 
 std::string ServerPI::getData(){
     int datasock = 0;
-    short port;
+    int port;
     std::string data;
 
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
@@ -123,11 +123,12 @@ int ServerPI::SendDTPPort(int port){
     resp.msg_response = "Please connect to this port:";
     SendResponse(resp);
     Response resp2;
+    sleep(2);
     if(curr_operation==UPLOAD_OP) resp2.status_code = "350";
     else if(curr_operation==DOWNLOAD_OP) resp2.status_code = "351";
     resp2.msg_response = std::to_string(port);
     std::cout << port << " port" << std::endl;
-    std::cout << "tutaj jestem";
+    //std::cout << "tutaj jestem";
     SendResponse(resp2);
 
     return 0;
