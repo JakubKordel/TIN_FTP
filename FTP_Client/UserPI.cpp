@@ -4,6 +4,13 @@
 
   UserPI::UserPI(){
     open = false;
+
+  }
+
+
+  // UserPI::UserPI(UserPI upi);
+
+  void UserPI::createSocket(){
     sock = socket( AF_INET, SOCK_STREAM, 0);
     if (sock == -1){
         perror("opening stream socket");
@@ -12,11 +19,8 @@
     }
   }
 
-
-  // UserPI::UserPI(UserPI upi);
-
   int UserPI::connectToServer(std::string serverName, int serverPort){
-
+    createSocket();
     servName = serverName;
 
     server.sin_family = AF_INET;

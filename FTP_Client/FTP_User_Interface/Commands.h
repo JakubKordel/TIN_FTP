@@ -78,7 +78,7 @@ public:
 
 	void handle(){
 		//std::cout << std::endl << "I AM HANDLING CONNECT COMMAND" << std::endl;
-    upi.connectToServer(args[1], atoi(args[2].c_str()));
+    if(upi.connectToServer(args[1], atoi(args[2].c_str())) != 0) {std::cout << "Connection error - server not found or doesnt accept your connection"; }
     std::string welcome_msg = upi.waitForServerResponse();
     std::cout << welcome_msg << "\n";
   }
@@ -105,6 +105,8 @@ public:
 	}
 
   void handle(){
+    std::string cmd = "exit";
+    upi.sendMsgToServer(cmd);
     upi.closeConnection();
   }
 

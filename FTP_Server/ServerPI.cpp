@@ -19,10 +19,10 @@ int ServerPI::Start(){
 
     Run();
     
-    std::cout << "ServerPI exit\tclient: " << client_addr << ":" << client_port << std::endl;
+    std::cout << "Tuz przed Close()" << client_addr << ":" << client_port << std::endl;
     
     Close(msgsocket);
-    std::cout << "ServerPI exit\tclient: " << client_addr << ":" << client_port << std::endl;
+    std::cout << "Tuz za Close() - return()" << client_addr << ":" << client_port << std::endl;
     return 0;
 }
 
@@ -130,8 +130,6 @@ int ServerPI::SendDTPPort(int port){
     if(curr_operation==UPLOAD_OP) resp2.status_code = "350";
     else if(curr_operation==DOWNLOAD_OP) resp2.status_code = "351";
     resp2.msg_response = std::to_string(port);
-    std::cout << port << " port" << std::endl;
-    //std::cout << "tutaj jestem";
     SendResponse(resp2);
 
     return 0;

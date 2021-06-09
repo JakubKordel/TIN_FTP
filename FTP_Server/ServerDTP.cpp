@@ -12,7 +12,6 @@ std::string ServerDTP::Run(){
 
     Listen(listensock, 1);
     // it could be implemented better with timing
-    std::cout << "ServerDTP\t Listening ... \n";
     datasock = Accept(listensock, (struct sockaddr*) &client, &cliaddrlen);
 
     if(operation == DWNLOAD){// we have to send data to client

@@ -132,7 +132,7 @@ public:
         }
         // send response to client
         ((ServerPI*)rq)->SendResponse(response);
-        std::cout << std::endl << "I LOGGIN COMMAND FINISHED" << std::endl;
+        std::cout << std::endl << "LOGGIN COMMAND FINISHED" << std::endl;
     }
 };
 
@@ -186,8 +186,6 @@ public:
 
     void handle(){
         Response response;
-        std::cout << std::endl << "I AM UPLOADING FILE TO THE SERVER" << std::endl;
-
         if( !rq->IsLogged() ){
             response.status_code = "531"; //u are LOGGED_OUT
             response.msg_response = "Error uploading, you have to be logged in to upload files";
@@ -212,6 +210,7 @@ public:
             }
         }
         ((ServerPI*)rq)->SendResponse(response);
+        std::cout << std::endl << "UPLOAD COMMAND FINISHED" << std::endl;
     }
 };
 
@@ -259,7 +258,7 @@ public:
         }
         ((ServerPI*)rq)->SendResponse(response);
 
-        std::cout << std::endl << "I AM DOWNLOADING FILE FROM THE SERVER" << std::endl;
+        std::cout << std::endl << "DOWNLOAD COMMAND FINISHED" << std::endl;
 
     }
 };

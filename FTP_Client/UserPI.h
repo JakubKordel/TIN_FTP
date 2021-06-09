@@ -30,6 +30,8 @@ class UserPI {
 
   ~UserPI();
 
+  void createSocket();
+  
   int connectToServer(std::string serverName, int serverPort);
 
   void closeConnection();
