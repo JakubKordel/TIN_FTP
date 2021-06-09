@@ -18,7 +18,6 @@ public:
 class RequestHandler: public ClientState {
 
 protected:
-    const std::string root_path = "~/Student/semestr_6/TIN/Projekt/Program/TIN_FTP";
     bool exitHandler = false;
 
 

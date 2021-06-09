@@ -18,8 +18,11 @@ int ServerPI::Start(){
     std::cout << "Serving client " << client_addr << ":" << client_port << std::endl;
 
     Run();
-
+    
+    std::cout << "ServerPI exit\tclient: " << client_addr << ":" << client_port << std::endl;
+    
     Close(msgsocket);
+    std::cout << "ServerPI exit\tclient: " << client_addr << ":" << client_port << std::endl;
     return 0;
 }
 
@@ -46,8 +49,8 @@ int ServerPI::SendResponse(Response resp){
 Command* ServerPI::nextCommand() {
     std::string req = WaitForRequest();
     if (req == ""){
-      close(msgsocket);
-      std::cout << "Server got empty request, exiting";
+    //   close(msgsocket);
+      std::cout << "Server got empty request, exiting ...\n";
       exitHandler = true; // it will finish connection with client and will close socket (thread finishes work)
     //   pthread_exit(0);
     }
@@ -78,7 +81,7 @@ void ServerPI::handleNoCommandFault() {
 
 std::string ServerPI::getData(){
     int datasock = 0;
-    short port;
+    int port;
     std::string data;
 
     datasock = Socket(AF_INET, SOCK_STREAM, 0);
@@ -123,11 +126,12 @@ int ServerPI::SendDTPPort(int port){
     resp.msg_response = "Please connect to this port:";
     SendResponse(resp);
     Response resp2;
+    sleep(2);
     if(curr_operation==UPLOAD_OP) resp2.status_code = "350";
     else if(curr_operation==DOWNLOAD_OP) resp2.status_code = "351";
     resp2.msg_response = std::to_string(port);
     std::cout << port << " port" << std::endl;
-    std::cout << "tutaj jestem";
+    //std::cout << "tutaj jestem";
     SendResponse(resp2);
 
     return 0;

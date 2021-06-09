@@ -126,12 +126,10 @@ public:
             rq->SetCurrPath(rq->GetRootPathUser());
             response.status_code = "230";
             response.msg_response = " OK, you have been logged in";
-            std::cout << rq->GetUsername() << ": logged: " <<rq->IsLogged() << ": current_path : " << rq->GetCurrPath() << "\n";
         }else{
             response.status_code = "530";
             response.msg_response = " Login error, wrong username or password";
         }
-
         // send response to client
         ((ServerPI*)rq)->SendResponse(response);
         std::cout << std::endl << "I LOGGIN COMMAND FINISHED" << std::endl;
@@ -161,6 +159,7 @@ public:
         }else{
             rq->ResetLogged();
             rq->SetUsername("");
+            rq->SetRootPathUser("");
             rq->SetCurrPath("");
             response.status_code = "231";
             response.msg_response = "OK, you have been logged out";
@@ -195,22 +194,22 @@ public:
         }else{
             ChecksumDB db;
             std::string data = ((ServerPI*)rq)->getData();
-            // ServerPI got from the ServerDTP data to save on disc
+            //ServerPI got from the ServerDTP data to save on disc
+	        if (db.fileExists(args.at(1), data)) {
+                response.status_code = "552"; // this file exists in database
+                response.msg_response = "Error uploading, file with this name or content already exists";
+            }
+            else {
+                std::string full_path = rq->GetCurrPath();
+                if( full_path[full_path.length()-1] != '/' ) full_path.push_back('/');
+                full_path.append(args.at(1));// concat current path and the filename
+                FileSystem::SaveFile(full_path, data); // saving the file
 
-            // if (db.fileExists(args.at(1), data)) {
-            //     response.status_code = "552"; // this file exists in database
-            //     response.msg_response = "Error uploading, file with this name or content already exists";
-            // }
-            // else {
-            //     db.addToDB(args.at(1), data); // adding new record to database
+                db.addToDB(args.at(1), data); // adding new record to database
 
-            //     std::string full_path = rq->GetCurrPath();
-            //     full_path.append(args.at(1));// concat current path and the filename
-            //     FileSystem::SaveFile(full_path, data); // saving the file
-
-            //     response.status_code = "200"; //u are LOGGED_OUT
-            //     response.msg_response = "OK, your file has been uploaded";
-            // }
+                response.status_code = "200"; //u are LOGGED_OUT
+                response.msg_response = "OK, your file has been uploaded";
+            }
         }
         ((ServerPI*)rq)->SendResponse(response);
     }
@@ -246,19 +245,16 @@ public:
                 ((ServerPI*)rq)->sendData(data);
                 response.status_code = "200";
                 response.msg_response = "OK, your file has been downloaded successfully";
-                std::cout << "Operacja powiodla sie\n";
             }
             else if (code == 1 || code == 2) {
                 // problem while opening file
                 response.status_code = "550";
                 response.msg_response = "Error downloading, your file could not be found";
-                std::cout << "blad 1 lub 2\n";            
             }
             else if (code == 3 || code == 4) {
                 // problem with reading characters from file
                 response.status_code = "500";
                 response.msg_response = "Error downloading, error while reading file's content";
-                std::cout << "Blad 3 lub 4\n";
             }
         }
         ((ServerPI*)rq)->SendResponse(response);
@@ -324,8 +320,6 @@ public:
     void handle() {
         Response response;
 
-        // std::cout << "folder: " << args.at(1) << "\nlength:" << args.at(1).length() << "\n";
-
         if (!rq->IsLogged()) {
             response.status_code = "531"; // u are LOGGED_OUT
             response.msg_response = "Error changing directory, you have to be logged in to change dir";
@@ -373,7 +367,6 @@ public:
             response.status_code = "531"; // u are LOGGED_OUT
             response.msg_response = "Error listing files and dirs, you have to be logged in to list files and dirs";
         }else{
-            std::cout << rq->GetCurrPath();
             int issuccess = FileSystem::List(result, rq->GetCurrPath());
             switch(issuccess){
                 case 0:

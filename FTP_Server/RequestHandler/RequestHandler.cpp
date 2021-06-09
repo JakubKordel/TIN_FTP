@@ -7,6 +7,7 @@ void RequestHandler::Run(){
         if (command == nullptr){
             // unknown command
             handleNoCommandFault();// sprawdzic czy zaimplementowane
+        std::cout << "exitHandler =\t" << exitHandler << "\n";
         } else {
             if (command->isCorrect()){
                 // command is correct
@@ -17,5 +18,7 @@ void RequestHandler::Run(){
             }
             delete(command);
         }
+
     }
+        std::cout << "End Run() function\n";
 }
