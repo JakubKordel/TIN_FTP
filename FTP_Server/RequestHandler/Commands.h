@@ -89,7 +89,13 @@ public:
         std::string login;
         std::string password;
 
-        if (args.size() == 1) {
+        if( rq->IsLogged() ) {
+            response.status_code = "535";
+            response.msg_response = "ERROR: You have to logout before you login again";
+            ((ServerPI*)rq)->SendResponse(response);
+            return;//
+        }
+        else if (args.size() == 1) {
           response.status_code = "330";
           response.msg_response = " Put your login: ";
           ((ServerPI*)rq)->SendResponse(response);
@@ -110,15 +116,14 @@ public:
           login = args[1];
           password = args[2];
         }
-
         AuthenticationDB auth;
         bool issuccess = auth.login(login, password);
         if( !rq->IsLogged() && issuccess ){
             rq->SetLogged();
             rq->SetUsername(login);
-            std::string root_path = rq->GetRootPath();
-            rq->SetRootPath(root_path.append(login));
-            rq->SetCurrPath(root_path);
+            std::string rpath = rq->GetRootPath();
+            rq->SetRootPathUser(rpath.append(login));
+            rq->SetCurrPath(rq->GetRootPathUser());
             response.status_code = "230";
             response.msg_response = " OK, you have been logged in";
             std::cout << rq->GetUsername() << ": logged: " <<rq->IsLogged() << ": current_path : " << rq->GetCurrPath() << "\n";

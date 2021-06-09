@@ -14,7 +14,7 @@ public:
     }
 
     bool fileExists(std::string filename, std::string content);
-    void addToDB(std::string filename, std::string content);
+    bool addToDB(std::string filename, std::string content);
     bool addToDBNewRecord(std::string filename, std::string content);
 
 private:

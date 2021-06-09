@@ -6,7 +6,9 @@ bool Database::exists(std::string s1, std::string s2, bool strict)
     for (size_t i = 0; i < value_count; ++i)
     {
         if (strict) {
-            if (db[0].second.at(i) == s1 || db[1].second.at(i) == s2)
+            // if (db[0].second.at(i) == s1 || db[1].second.at(i) == s2)
+            // check only checksum, filename can repeat in database, but not in the same directory, what is verify in other module
+            if ( db[1].second.at(i) == s2)
                 return true;
         }
         else if (db[0].second.at(i) == s1 && db[1].second.at(i) == s2)
