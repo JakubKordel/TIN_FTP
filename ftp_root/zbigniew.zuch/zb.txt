@@ -1,1 +1,2 @@
 zb - dir can't be empty on github
+0.0.0
