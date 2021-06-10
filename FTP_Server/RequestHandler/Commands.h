@@ -195,7 +195,7 @@ public:
             //ServerPI got from the ServerDTP data to save on disc
 	        if (db.fileExists(args.at(1), data)) {
                 response.status_code = "552"; // this file exists in database
-                response.msg_response = "Error uploading, file with this name or content already exists";
+                response.msg_response = "Error uploading, file with this content already exists";
             }
             else {
                 std::string full_path = rq->GetCurrPath();

@@ -160,7 +160,7 @@ int FileSystem::GetFile(std::string &result, std::string path){
         is.seekg(0, is.end);
         int length = is.tellg();
         is.seekg(0, is.beg);
-        buffer = new char[length];
+        buffer = new char[length + 1] {0}; //zainicjalizowane zerami
 
         // reading
         is.read(buffer, length);
